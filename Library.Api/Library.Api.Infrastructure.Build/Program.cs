@@ -72,12 +72,38 @@ var githubPipeline = new GithubPipeline
     }
 };
 
-string buildScriptPath = "../../../../.github/workflows/dotnet.yml";
-string directoryPath = Path.GetDirectoryName(buildScriptPath);
+string? solutionRoot = null;
+
+DirectoryInfo? current = new DirectoryInfo(Directory.GetCurrentDirectory());
+
+while (current != null)
+{
+    if (current.GetFiles("*.sln").Any())
+    {
+        solutionRoot = current.FullName;
+        break;
+    }
+
+    current = current.Parent;
+}
+
+if (solutionRoot is null)
+{
+    throw new InvalidOperationException("Solution root (.sln) not found.");
+}
+
+string buildScriptPath =
+    Path.Combine(solutionRoot, ".github", "workflows", "dotnet.yml");
+
+string directoryPath = Path.GetDirectoryName(buildScriptPath)!;
 
 if (!Directory.Exists(directoryPath))
 {
     Directory.CreateDirectory(directoryPath);
 }
 
-aDotNetClient.SerializeAndWriteToFile(githubPipeline, path: buildScriptPath);
+aDotNetClient.SerializeAndWriteToFile(githubPipeline, buildScriptPath);
+
+Console.WriteLine("YML CREATED AT:");
+Console.WriteLine(buildScriptPath);
+Console.ReadLine();
