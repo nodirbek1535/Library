@@ -1,3 +1,7 @@
+//===============================================
+//@nodirbek1535 library api program (C)
+//===============================================
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
