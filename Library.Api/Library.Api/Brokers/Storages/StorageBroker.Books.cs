@@ -4,11 +4,24 @@
 
 using Library.Api.Models.Books;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Library.Api.Brokers.Storages
 {
     public partial class StorageBroker
     {
         public DbSet<Book> Books { get; set; }
+
+        public async ValueTask<Book> InsertBookAsync(Book book)
+        {
+            using var broker = new StorageBroker(this.configuration);
+
+            EntityEntry<Book> bookEntityEntry = 
+                await broker.Books.AddAsync(book);
+
+            await broker.SaveChangesAsync();
+
+            return bookEntityEntry.Entity;
+        }
     }
 }
