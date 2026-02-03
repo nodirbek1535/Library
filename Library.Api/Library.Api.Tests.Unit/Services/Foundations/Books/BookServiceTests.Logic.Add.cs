@@ -2,10 +2,8 @@
 //@nodirbek1535 library api program (C)
 //===============================================
 
-using System;
-using System.Collections.Generic;
-using System.Text;
 using FluentAssertions;
+using Force.DeepCloner;
 using Library.Api.Models.Books;
 using Moq;
 
@@ -19,8 +17,8 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Books
             //given
             Book randomBook = CreateRandomBook();
             Book inputBook = randomBook;
-            Book returningBook = inputBook; 
-            Book expectedBook = returningBook;
+            Book returningBook = inputBook;
+            Book expectedBook = returningBook.DeepClone();
 
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertBookAsync(inputBook))

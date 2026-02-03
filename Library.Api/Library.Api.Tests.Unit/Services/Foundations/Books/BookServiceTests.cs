@@ -19,7 +19,7 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Books
         {
             this.storageBrokerMock = new Mock<IStorageBroker>();
 
-            this.bookService = 
+            this.bookService =
                 new BookService(storageBroker: this.storageBrokerMock.Object);
         }
         private static Book CreateRandomBook() =>

@@ -12,9 +12,10 @@ namespace Library.Api.Services.Foundations.Books
         private readonly IStorageBroker storageBroker;
 
         public BookService(IStorageBroker storageBroker) =>
-            this.storageBroker = storageBroker; 
+            this.storageBroker = storageBroker;
 
-        public ValueTask<Book> AddBookAsync(Book book) =>
-            throw new NotImplementedException();
+        public async ValueTask<Book> AddBookAsync(Book book) =>
+            await this.storageBroker.InsertBookAsync(book);
+
     }
 }
