@@ -4,7 +4,7 @@
 
 namespace Library.Api.Brokers.Loggings
 {
-    public class LoggingBroker:ILoggingBroker
+    public class LoggingBroker : ILoggingBroker
     {
         private readonly ILogger<LoggingBroker> logger;
 
