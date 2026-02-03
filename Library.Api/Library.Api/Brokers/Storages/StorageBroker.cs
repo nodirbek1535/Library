@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Library.Api.Brokers.Storages
 {
-    public partial class StorageBroker:EFxceptionsContext, IStorageBroker
+    public partial class StorageBroker : EFxceptionsContext, IStorageBroker
     {
         private readonly IConfiguration configuration;
 

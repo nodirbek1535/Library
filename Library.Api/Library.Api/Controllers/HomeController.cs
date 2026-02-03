@@ -12,7 +12,7 @@ namespace Library.Api.Controllers
     public class HomeController : RESTFulController
     {
         [HttpGet]
-        public ActionResult<string> Get() => 
+        public ActionResult<string> Get() =>
             Ok("Library API is running.");
     }
 }
