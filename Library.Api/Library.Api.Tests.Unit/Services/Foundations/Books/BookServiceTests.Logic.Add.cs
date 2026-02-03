@@ -17,12 +17,12 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Books
             //given
             Book randomBook = CreateRandomBook();
             Book inputBook = randomBook;
-            Book returningBook = inputBook;
-            Book expectedBook = returningBook.DeepClone();
+            Book storageBook = inputBook;
+            Book expectedBook = storageBook.DeepClone();
 
             this.storageBrokerMock.Setup(broker =>
                 broker.InsertBookAsync(inputBook))
-                    .ReturnsAsync(returningBook);
+                    .ReturnsAsync(storageBook);
 
             //when
             Book actualBook =
