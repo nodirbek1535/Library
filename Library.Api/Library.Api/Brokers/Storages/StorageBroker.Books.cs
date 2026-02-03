@@ -16,7 +16,7 @@ namespace Library.Api.Brokers.Storages
         {
             using var broker = new StorageBroker(this.configuration);
 
-            EntityEntry<Book> bookEntityEntry = 
+            EntityEntry<Book> bookEntityEntry =
                 await broker.Books.AddAsync(book);
 
             await broker.SaveChangesAsync();

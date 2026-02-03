@@ -2,7 +2,6 @@
 //@nodirbek1535 library api program (C)
 //===============================================
 
-using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
