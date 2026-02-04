@@ -23,6 +23,10 @@ namespace Library.Api.Services.Foundations.Books
             {
                 throw CreateAndLogValidationException(nullBookException);
             }
+            catch(InvalidBookException invalidBookException)
+            {
+                throw CreateAndLogValidationException(invalidBookException);
+            }
         }
 
         private BookValidationException CreateAndLogValidationException(
