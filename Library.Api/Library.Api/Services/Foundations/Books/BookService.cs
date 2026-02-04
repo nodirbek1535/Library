@@ -10,7 +10,7 @@ using Microsoft.Identity.Client;
 
 namespace Library.Api.Services.Foundations.Books
 {
-    public class BookService : IBookService
+    public partial class BookService : IBookService
     {
         private readonly IStorageBroker storageBroker;
         private readonly ILoggingBroker loggingBroker;
