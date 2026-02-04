@@ -23,26 +23,12 @@ namespace Library.Api.Services.Foundations.Books
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<Book> AddBookAsync(Book book)
-        {
-            try
+        public ValueTask<Book> AddBookAsync(Book book) =>
+            TryCatch(async () =>
             {
-                if (book is null)
-                {
-                    throw new NullBookException();
-                }
+                ValidateBookNotNull(book);
 
                 return await this.storageBroker.InsertBookAsync(book);
-            }
-            catch (NullBookException nullBookException)
-            {
-                var bookValidationException =
-                    new BookValidationException(nullBookException);
-
-                this.loggingBroker.LogError(bookValidationException);
-
-                throw bookValidationException;
-            }
-        }
+            });
     }
 }
