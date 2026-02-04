@@ -36,6 +36,7 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Books
                     Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

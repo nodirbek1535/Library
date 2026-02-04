@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Text;
 using Library.Api.Models.Books;
 using Library.Api.Models.Books.Exceptions;
+using Moq;
 
 namespace Library.Api.Tests.Unit.Services.Foundations.Books
 {
@@ -29,6 +30,18 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Books
             //then
             await Assert.ThrowsAsync<BookValidationException>(() =>
                 addBookTask.AsTask());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedBookValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.InsertBookAsync(It.IsAny<Book>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
