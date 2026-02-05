@@ -40,14 +40,8 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Books
         private static SqlException GetSqlError() =>
             (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
 
-        private Expression<Func<Exception, bool>> SameExceptionAs(
-            Exception expectedException)
-        {
-            return actualException =>
-                actualException.Message == expectedException.Message
-                && actualException.InnerException.Message == expectedException.InnerException.Message
-                && (actualException.InnerException as Xeption).DataEquals(expectedException.InnerException.Data);
-        }
+        private Expression<Func<Exception, bool>> SameExceptionAs(Xeption expectedException) =>
+            actualException => actualException.SameExceptionAs(expectedException);
 
         private static Filler<Book> CreateBookFiller()
         {

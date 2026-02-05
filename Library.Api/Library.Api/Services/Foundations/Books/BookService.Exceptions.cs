@@ -40,6 +40,11 @@ namespace Library.Api.Services.Foundations.Books
                 var alreadyExistsBookException = new AlreadyExistBookException(duplicateKeyException);
                 throw CreateAndLogDependencyValidationException(alreadyExistsBookException);
             }
+            catch(Exception exception)
+            {
+                var failedBookServiceException = new FailedBookServiceException(exception);
+                throw CreateAndLogServiceException(failedBookServiceException);
+            }
         }
 
         private BookValidationException CreateAndLogValidationException(
@@ -68,6 +73,15 @@ namespace Library.Api.Services.Foundations.Books
             this.loggingBroker.LogError(bookDependencyValidationException);
 
             return bookDependencyValidationException;
+        }
+
+        private BookServiceException CreateAndLogServiceException(Xeption exception)
+        {
+            var bookServiceException = new BookServiceException(exception);
+
+            this.loggingBroker.LogError(bookServiceException);
+
+            return bookServiceException;
         }
     }
 }
