@@ -3,10 +3,12 @@
 //===============================================
 
 using System.Linq.Expressions;
+using System.Runtime.Serialization;
 using Library.Api.Brokers.Loggings;
 using Library.Api.Brokers.Storages;
 using Library.Api.Models.Books;
 using Library.Api.Services.Foundations.Books;
+using Microsoft.Data.SqlClient;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
@@ -31,6 +33,9 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Books
         }
         private static Book CreateRandomBook() =>
             CreateBookFiller().Create();
+
+        private static SqlException GetSqlError() =>
+            (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
 
         private Expression<Func<Exception, bool>> SameExceptionAs(
             Exception expectedException)

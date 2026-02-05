@@ -3,8 +3,10 @@
 //===============================================
 
 
+using System.Data;
 using Library.Api.Models.Books;
 using Library.Api.Models.Books.Exceptions;
+using Microsoft.Data.SqlClient;
 using Xeptions;
 
 namespace Library.Api.Services.Foundations.Books
@@ -27,6 +29,11 @@ namespace Library.Api.Services.Foundations.Books
             {
                 throw CreateAndLogValidationException(invalidBookException);
             }
+            catch(SqlException sqlException)
+            {
+                var failedBookStorageException = new FailedBookStorageException(sqlException);
+                throw CreateAndLogCriticalDependencyException(failedBookStorageException);
+            }
         }
 
         private BookValidationException CreateAndLogValidationException(
@@ -38,6 +45,14 @@ namespace Library.Api.Services.Foundations.Books
             this.loggingBroker.LogError(bookValidationException);
 
             return bookValidationException;
+        }
+
+        private BookDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
+        {
+            var bookDependencyException = new BookDependencyException(exception);
+            this.loggingBroker.LogCritical(bookDependencyException);
+
+            return bookDependencyException;
         }
     }
 }
