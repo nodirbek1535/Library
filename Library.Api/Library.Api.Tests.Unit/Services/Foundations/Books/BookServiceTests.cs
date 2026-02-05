@@ -3,10 +3,12 @@
 //===============================================
 
 using System.Linq.Expressions;
+using System.Runtime.Serialization;
 using Library.Api.Brokers.Loggings;
 using Library.Api.Brokers.Storages;
 using Library.Api.Models.Books;
 using Library.Api.Services.Foundations.Books;
+using Microsoft.Data.SqlClient;
 using Moq;
 using Tynamix.ObjectFiller;
 using Xeptions;
@@ -32,14 +34,14 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Books
         private static Book CreateRandomBook() =>
             CreateBookFiller().Create();
 
-        private Expression<Func<Exception, bool>> SameExceptionAs(
-            Exception expectedException)
-        {
-            return actualException =>
-                actualException.Message == expectedException.Message
-                && actualException.InnerException.Message == expectedException.InnerException.Message
-                && (actualException.InnerException as Xeption).DataEquals(expectedException.InnerException.Data);
-        }
+        private static string GetRandomString() =>
+            new MnemonicString().GetValue();
+
+        private static SqlException GetSqlError() =>
+            (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
+
+        private Expression<Func<Exception, bool>> SameExceptionAs(Xeption expectedException) =>
+            actualException => actualException.SameExceptionAs(expectedException);
 
         private static Filler<Book> CreateBookFiller()
         {
