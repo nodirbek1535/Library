@@ -34,6 +34,9 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Books
         private static Book CreateRandomBook() =>
             CreateBookFiller().Create();
 
+        private static string GetRandomString() =>
+            new MnemonicString().GetValue();
+
         private static SqlException GetSqlError() =>
             (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
 

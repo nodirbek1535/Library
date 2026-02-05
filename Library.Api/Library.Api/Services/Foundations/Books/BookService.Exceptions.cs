@@ -4,6 +4,7 @@
 
 
 using System.Data;
+using EFxceptions.Models.Exceptions;
 using Library.Api.Models.Books;
 using Library.Api.Models.Books.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -34,6 +35,11 @@ namespace Library.Api.Services.Foundations.Books
                 var failedBookStorageException = new FailedBookStorageException(sqlException);
                 throw CreateAndLogCriticalDependencyException(failedBookStorageException);
             }
+            catch(DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsBookException = new AlreadyExistBookException(duplicateKeyException);
+                throw CreateAndLogDependencyValidationException(alreadyExistsBookException);
+            }
         }
 
         private BookValidationException CreateAndLogValidationException(
@@ -53,6 +59,15 @@ namespace Library.Api.Services.Foundations.Books
             this.loggingBroker.LogCritical(bookDependencyException);
 
             return bookDependencyException;
+        }
+
+        private BookDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var bookDependencyValidationException = new BookDependencyValidationException(exception);
+
+            this.loggingBroker.LogError(bookDependencyValidationException);
+
+            return bookDependencyValidationException;
         }
     }
 }
