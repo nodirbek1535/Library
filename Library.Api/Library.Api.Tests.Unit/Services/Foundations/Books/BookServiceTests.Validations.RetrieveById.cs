@@ -46,5 +46,43 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Books
              this.storageBrokerMock.VerifyNoOtherCalls();
              this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowNotFoundExceptionOnRetrieveByIdIfBookIsNorFoundAndLogItAsync()
+        {
+            //given
+            Guid someBookId = Guid.NewGuid();
+            Book noBook = null;
+
+            var notFoundBookException = 
+                new NotFoundBookException(someBookId);
+
+            var expectedBookValidationException = 
+                new BookValidationException(notFoundBookException);
+             
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectBookByIdAsync(someBookId))
+                    .ReturnsAsync(noBook);
+
+            //when
+            ValueTask<Book> retrieveBookByIdTask =
+                this.bookService.RetrieveBookByIdAsync(someBookId);
+
+            //then
+            await Assert.ThrowsAsync<BookValidationException>(() =>
+                retrieveBookByIdTask.AsTask());
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectBookByIdAsync(someBookId),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(
+                    SameExceptionAs(expectedBookValidationException))),
+                        Times.Once);
+
+             this.storageBrokerMock.VerifyNoOtherCalls();
+             this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
