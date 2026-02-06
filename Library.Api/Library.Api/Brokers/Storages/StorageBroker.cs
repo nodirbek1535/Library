@@ -3,7 +3,9 @@
 //===============================================
 
 using EFxceptions;
+using Library.Api.Models.Books;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Library.Api.Brokers.Storages
 {
@@ -26,5 +28,23 @@ namespace Library.Api.Brokers.Storages
         }
 
         public override void Dispose() { }
+
+        //BOOKS
+        async ValueTask<Book> IStorageBroker.InsertBookAsync(Book book)
+        {
+            var broker = new StorageBroker(this.configuration);
+            broker.Entry(book).State = EntityState.Added;
+            await broker.SaveChangesAsync();
+
+            return book;
+        }
+
+        async ValueTask<Book> IStorageBroker.SelectBookByIdAsync(Guid bookId)
+        {
+            var broker = new StorageBroker(this.configuration);
+
+            return await broker.Books
+                .FirstOrDefaultAsync(book => book.Id == bookId);
+        }
     }
 }

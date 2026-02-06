@@ -9,5 +9,6 @@ namespace Library.Api.Brokers.Storages
     public partial interface IStorageBroker
     {
         ValueTask<Book> InsertBookAsync(Book book);
+        ValueTask<Book> SelectBookByIdAsync(Guid bookId);
     }
 }
