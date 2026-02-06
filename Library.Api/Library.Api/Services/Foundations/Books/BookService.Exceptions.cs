@@ -30,6 +30,10 @@ namespace Library.Api.Services.Foundations.Books
             {
                 throw CreateAndLogValidationException(invalidBookException);
             }
+            catch(NotFoundBookException notFoundBookException)
+            {
+                throw CreateAndLogValidationException(notFoundBookException);
+            }
             catch(SqlException sqlException)
             {
                 var failedBookStorageException = new FailedBookStorageException(sqlException);

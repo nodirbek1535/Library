@@ -33,6 +33,20 @@ namespace Library.Api.Services.Foundations.Books
             }
         }
 
+        private void ValidateBookId(Guid bookId)
+        {
+            Validate(
+                (Rule: IsInvalid(bookId), Parameter: nameof(Book.Id))
+                );
+        }
+
+        private void ValidateStorageBook(Book maybeBook, Guid bookId)
+        {
+            if (maybeBook is null)
+            {
+                throw new NotFoundBookException(bookId);
+            }
+        }
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,

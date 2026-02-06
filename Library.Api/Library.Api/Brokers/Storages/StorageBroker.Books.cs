@@ -23,5 +23,13 @@ namespace Library.Api.Brokers.Storages
 
             return bookEntityEntry.Entity;
         }
+
+        public async ValueTask<Book> SelectBookByIdAsync(Guid bookId)
+        {
+            using var broker = new StorageBroker(this.configuration);
+
+            return await broker.Books
+                .FirstOrDefaultAsync(book => book.Id == bookId);
+        }
     }
 }

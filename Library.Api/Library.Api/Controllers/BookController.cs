@@ -28,7 +28,7 @@ namespace Library.Api.Controllers
 
                 return Created(addedBook);
             }
-            catch(BookValidationException bookValidationException)
+            catch (BookValidationException bookValidationException)
             {
                 return BadRequest(bookValidationException.InnerException);
             }
@@ -37,11 +37,35 @@ namespace Library.Api.Controllers
             {
                 return Conflict(bookDependencyValidationException.InnerException);
             }
-            catch(BookDependencyException bookDependencyException)
+            catch (BookDependencyException bookDependencyException)
             {
                 return InternalServerError(bookDependencyException.InnerException);
             }
-            catch(BookServiceException bookServiceException)
+            catch (BookServiceException bookServiceException)
+            {
+                return InternalServerError(bookServiceException.InnerException);
+            }
+        }
+
+        [HttpGet("{bookId}")]
+        public async ValueTask<ActionResult> GetBookByIdAsync(Guid bookId)
+        {
+            try
+            {
+                Book retrievedBook =
+                    await this.bookService.RetrieveBookByIdAsync(bookId);
+
+                return Ok(retrievedBook);
+            }
+            catch (BookValidationException bookValidationException)
+            {
+                return BadRequest(bookValidationException.InnerException);
+            }
+            catch (BookDependencyException bookDependencyException)
+            {
+                return InternalServerError(bookDependencyException.InnerException);
+            }
+            catch (BookServiceException bookServiceException)
             {
                 return InternalServerError(bookServiceException.InnerException);
             }
