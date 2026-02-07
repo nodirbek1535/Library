@@ -11,5 +11,6 @@ namespace Library.Api.Brokers.Storages
         ValueTask<Book> InsertBookAsync(Book book);
         ValueTask<Book> SelectBookByIdAsync(Guid bookId);
         IQueryable<Book> SelectAllBooks();
+        ValueTask<Book> UpdateBookAsync(Book book);
     }
 }

@@ -35,5 +35,14 @@ namespace Library.Api.Brokers.Storages
         public IQueryable<Book> SelectAllBooks() =>
             SelectAll<Book>(); 
 
+        public async ValueTask<Book> UpdateBookAsync(Book book)
+        {
+            using var broker = new StorageBroker(this.configuration);
+
+            broker.Books.Update(book);
+            await broker.SaveChangesAsync();
+
+            return book;
+        }
     }
 }

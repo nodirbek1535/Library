@@ -52,5 +52,14 @@ namespace Library.Api.Brokers.Storages
 
         IQueryable<Book> IStorageBroker.SelectAllBooks() =>
             SelectAll<Book>();
+
+        async ValueTask<Book> IStorageBroker.UpdateBookAsync(Book book)
+        {
+            var broker = new StorageBroker(this.configuration);
+            broker.Entry(book).State = EntityState.Modified;
+            await broker.SaveChangesAsync();
+
+            return book;
+        }
     }
 }
