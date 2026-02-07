@@ -19,6 +19,9 @@ namespace Library.Api.Brokers.Storages
             this.Database.Migrate();
         }
 
+        protected IQueryable<T> SelectAll<T>() where T : class => 
+            this.Set<T>();
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             string connectionString =
@@ -46,5 +49,8 @@ namespace Library.Api.Brokers.Storages
             return await broker.Books
                 .FirstOrDefaultAsync(book => book.Id == bookId);
         }
+
+        IQueryable<Book> IStorageBroker.SelectAllBooks() =>
+            SelectAll<Book>();
     }
 }
