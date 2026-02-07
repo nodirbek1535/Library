@@ -25,6 +25,17 @@ namespace Library.Api.Services.Foundations.Books
                 (Rule: IsInvalid(book.ReaderId), Parameter: nameof(Book.ReaderId))
                 );
         }
+
+        private void ValidateBookOnModify(Book book)
+        {
+            ValidateBookNotNull(book);
+            Validate(
+                (Rule: IsInvalid(book.Name), Parameter: nameof(Book.Name)),
+                (Rule: IsInvalid(book.Author), Parameter: nameof(Book.Author)),
+                (Rule: IsInvalid(book.Genre), Parameter: nameof(Book.Genre))
+                );
+        }
+
         private void ValidateBookNotNull(Book book)
         {
             if (book is null)
@@ -47,6 +58,7 @@ namespace Library.Api.Services.Foundations.Books
                 throw new NotFoundBookException(bookId);
             }
         }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,
