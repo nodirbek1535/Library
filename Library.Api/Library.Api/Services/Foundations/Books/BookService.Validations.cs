@@ -29,6 +29,9 @@ namespace Library.Api.Services.Foundations.Books
         private void ValidateBookOnModify(Book book)
         {
             ValidateBookNotNull(book);
+
+            ValidateBookId(book.Id);
+
             Validate(
                 (Rule: IsInvalid(book.Name), Parameter: nameof(Book.Name)),
                 (Rule: IsInvalid(book.Author), Parameter: nameof(Book.Author)),

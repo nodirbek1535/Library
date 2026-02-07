@@ -51,5 +51,46 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Books
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfBookIsInvalidAndLogItAsync()
+        {
+            //given
+            var invalidBook = new Book
+            {
+                Id = Guid.Empty
+            };  
+
+            var invalidBookException = new InvalidBookException();
+
+            invalidBookException.AddData(
+                key: nameof(Book.Id),
+                values: "Id is required");
+
+            var expectedBookValidationException =
+                new BookValidationException(invalidBookException);
+
+            //when
+            BookValidationException actualBookValidationException =
+                await Assert.ThrowsAsync<BookValidationException>(
+                    () => this.bookService.ModifyBookAsync(invalidBook).AsTask());
+
+            //then
+            actualBookValidationException
+                .SameExceptionAs(expectedBookValidationException)
+                    .Should().BeTrue();
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedBookValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectBookByIdAsync(It.IsAny<Guid>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }

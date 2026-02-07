@@ -82,6 +82,7 @@ namespace Library.Api.Services.Foundations.Books
                     await this.storageBroker.SelectBookByIdAsync(book.Id);
 
                 ValidateStorageBook(maybeBook, book.Id);
+
                 return await this.storageBroker.UpdateBookAsync(book);
             });
     }
