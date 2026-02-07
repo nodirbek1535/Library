@@ -64,7 +64,12 @@ namespace Library.Api.Services.Foundations.Books
                 var failedBookServiceException =
                     new FailedBookServiceException(exception);
 
-                throw new BookServiceException(failedBookServiceException);
+                var bookServiceException =
+                    new BookServiceException(failedBookServiceException);
+
+                this.loggingBroker.LogError(bookServiceException);
+
+                throw bookServiceException;
             }
         }
     }
