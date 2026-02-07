@@ -31,5 +31,9 @@ namespace Library.Api.Brokers.Storages
             return await broker.Books
                 .FirstOrDefaultAsync(book => book.Id == bookId);
         }
+
+        public IQueryable<Book> SelectAllBooks() =>
+            SelectAll<Book>(); 
+
     }
 }
