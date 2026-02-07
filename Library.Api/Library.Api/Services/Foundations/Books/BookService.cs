@@ -52,7 +52,12 @@ namespace Library.Api.Services.Foundations.Books
                 var failedBookServiceException =
                     new FailedBookServiceException(sqlException);
 
-                throw new BookDependencyException(failedBookServiceException);
+                var bookDependencyException =
+                    new BookDependencyException(failedBookServiceException);    
+
+                this.loggingBroker.LogCritical(bookDependencyException);
+
+                throw bookDependencyException;
             }
             catch (Exception exception)
             {
