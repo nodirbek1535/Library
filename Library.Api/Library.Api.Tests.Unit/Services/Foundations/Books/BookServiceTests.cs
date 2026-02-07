@@ -34,6 +34,18 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Books
         private static Book CreateRandomBook() =>
             CreateBookFiller().Create();
 
+        private static IQueryable<Book> CreateRandomBooks()
+        {
+            int randomNumber = GetRandomNumber();
+
+            return Enumerable.Range(0, randomNumber)
+                .Select(_ => CreateRandomBook())
+                .AsQueryable();
+        }
+
+        private static int GetRandomNumber() =>
+            new IntRange(min: 4, max: 20).GetValue();
+
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
 
