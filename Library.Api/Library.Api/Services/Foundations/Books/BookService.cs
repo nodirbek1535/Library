@@ -72,5 +72,18 @@ namespace Library.Api.Services.Foundations.Books
                 throw bookServiceException;
             }
         }
+
+        public ValueTask<Book> ModifyBookAsync(Book book) =>
+            TryCatch(async () =>
+            {
+                ValidateBookOnModify(book);
+
+                Book maybeBook = 
+                    await this.storageBroker.SelectBookByIdAsync(book.Id);
+
+                ValidateStorageBook(maybeBook, book.Id);
+
+                return await this.storageBroker.UpdateBookAsync(book);
+            });
     }
 }

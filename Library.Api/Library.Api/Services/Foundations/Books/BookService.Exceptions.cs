@@ -8,6 +8,7 @@ using EFxceptions.Models.Exceptions;
 using Library.Api.Models.Books;
 using Library.Api.Models.Books.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Xeptions;
 
 namespace Library.Api.Services.Foundations.Books
@@ -39,7 +40,17 @@ namespace Library.Api.Services.Foundations.Books
                 var failedBookStorageException = new FailedBookStorageException(sqlException);
                 throw CreateAndLogCriticalDependencyException(failedBookStorageException);
             }
-            catch(DuplicateKeyException duplicateKeyException)
+            catch(DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedBookException = new LockedBookException(dbUpdateConcurrencyException);
+                throw CreateAndLogDependencyValidationException(lockedBookException);
+            }
+            catch(DbUpdateException dbUpdateException)
+            {
+                var failedBookStorageException = new FailedBookStorageException(dbUpdateException);
+                throw CreateAndLogCriticalDependencyException(failedBookStorageException);
+            }
+            catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsBookException = new AlreadyExistBookException(duplicateKeyException);
                 throw CreateAndLogDependencyValidationException(alreadyExistsBookException);
@@ -87,5 +98,15 @@ namespace Library.Api.Services.Foundations.Books
 
             return bookServiceException;
         }
+
+        private BookDependencyException CreateAndLogDependencyException(Xeption exception)
+        {
+            var bookDependencyException = 
+                new BookDependencyException(exception);
+
+            this.loggingBroker.LogError(bookDependencyException);
+
+            return bookDependencyException;
+        }   
     }
 }
