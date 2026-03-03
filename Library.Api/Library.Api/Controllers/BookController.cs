@@ -76,7 +76,7 @@ namespace Library.Api.Controllers
         {
             try
             {
-                IQueryable<Book> allBooks = 
+                IQueryable<Book> allBooks =
                     this.bookService.RetrieveAllBooks();
 
                 return Ok(allBooks);
@@ -90,5 +90,38 @@ namespace Library.Api.Controllers
                 return InternalServerError(bookServiceException.InnerException);
             }
         }
+
+        [HttpPut]
+        public async ValueTask<ActionResult<Book>> PutBookAsync(Book book)
+        {
+            try
+            {
+                Book modifiedBook =
+                    await this.bookService.ModifyBookAsync(book);
+
+                return Ok(modifiedBook);
+            }
+            catch (BookValidationException bookValidationException)
+            {
+                return BadRequest(bookValidationException.InnerException);
+            }
+            catch (BookDependencyValidationException bookDependencyValidationException)
+                when (bookDependencyValidationException.InnerException is LockedBookException)
+            {
+                return Locked(bookDependencyValidationException.InnerException);
+            }
+            catch (BookDependencyValidationException bookDependencyValidationException)
+            {
+                return BadRequest(bookDependencyValidationException.InnerException);
+            }
+            catch (BookDependencyException bookDependencyException)
+            {
+                return InternalServerError(bookDependencyException.InnerException);
+            }
+            catch (BookServiceException bookServiceException)
+            {
+                return InternalServerError(bookServiceException.InnerException);
+            }
+        } 
     }
 }
