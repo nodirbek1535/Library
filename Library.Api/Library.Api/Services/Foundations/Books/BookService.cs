@@ -84,5 +84,18 @@ namespace Library.Api.Services.Foundations.Books
 
                 return await this.storageBroker.UpdateBookAsync(book);
             });
+
+        public ValueTask<Book> RemoveBookByIdAsync(Guid bookId) =>
+            TryCatch(async () =>
+            {
+                ValidateBookId(bookId);
+
+                Book maybeBook =
+                    await this.storageBroker.SelectBookByIdAsync(bookId);
+
+                ValidateStorageBook(maybeBook, bookId);
+
+                return await this.storageBroker.DeleteBookAsync(maybeBook);
+            });
     }
 }
