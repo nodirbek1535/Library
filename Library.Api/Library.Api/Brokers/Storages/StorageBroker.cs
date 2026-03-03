@@ -5,7 +5,6 @@
 using EFxceptions;
 using Library.Api.Models.Books;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Library.Api.Brokers.Storages
 {
@@ -19,7 +18,7 @@ namespace Library.Api.Brokers.Storages
             this.Database.Migrate();
         }
 
-        protected IQueryable<T> SelectAll<T>() where T : class => 
+        protected IQueryable<T> SelectAll<T>() where T : class =>
             this.Set<T>();
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -57,6 +56,15 @@ namespace Library.Api.Brokers.Storages
         {
             var broker = new StorageBroker(this.configuration);
             broker.Entry(book).State = EntityState.Modified;
+            await broker.SaveChangesAsync();
+
+            return book;
+        }
+
+        async ValueTask<Book> IStorageBroker.DeleteBookAsync(Book book)
+        {
+            var broker = new StorageBroker(this.configuration);
+            broker.Entry(book).State = EntityState.Deleted;
             await broker.SaveChangesAsync();
 
             return book;

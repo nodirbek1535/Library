@@ -2,9 +2,6 @@
 //@nodirbek1535 library api program (C)
 //===============================================
 
-using System;
-using System.Collections.Generic;
-using System.Text;
 using FluentAssertions;
 using Library.Api.Models.Books;
 using Library.Api.Models.Books.Exceptions;
@@ -23,11 +20,11 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Books
 
             var nullBookException = new NullBookException();
 
-            var excpectedBookValidationException = 
+            var excpectedBookValidationException =
                 new BookValidationException(nullBookException);
 
             //when
-            ValueTask<Book> modifyBookTask = 
+            ValueTask<Book> modifyBookTask =
                 this.bookService.ModifyBookAsync(nullBook);
 
             BookValidationException actualBookValidationException =
@@ -35,7 +32,7 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Books
                     modifyBookTask.AsTask);
 
             //then
-            actualBookValidationException 
+            actualBookValidationException
                 .SameExceptionAs(excpectedBookValidationException)
                     .Should().BeTrue();
 
@@ -47,7 +44,7 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Books
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectBookByIdAsync(It.IsAny<Guid>()),
                     Times.Never);
-            
+
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
@@ -59,7 +56,7 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Books
             var invalidBook = new Book
             {
                 Id = Guid.Empty
-            };  
+            };
 
             var invalidBookException = new InvalidBookException();
 
@@ -101,7 +98,7 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Books
             Book nonExistingBook = randomBook;
             Book nullBook = null;
 
-            var notFoundBookException = 
+            var notFoundBookException =
                 new NotFoundBookException(nonExistingBook.Id);
 
             var expectedBookValidationException =

@@ -18,7 +18,7 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Books
     public partial class BookServiceTests
     {
         private readonly Mock<IStorageBroker> storageBrokerMock;
-        private readonly Mock<ILoggingBroker> loggingBrokerMock;    
+        private readonly Mock<ILoggingBroker> loggingBrokerMock;
         private readonly IBookService bookService;
 
         public BookServiceTests()

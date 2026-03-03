@@ -122,6 +122,6 @@ namespace Library.Api.Controllers
             {
                 return InternalServerError(bookServiceException.InnerException);
             }
-        } 
+        }
     }
 }

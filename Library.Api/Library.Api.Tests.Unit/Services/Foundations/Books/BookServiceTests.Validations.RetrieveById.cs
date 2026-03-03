@@ -2,9 +2,6 @@
 //@nodirbek1535 library api program (C)
 //===============================================
 
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Library.Api.Models.Books;
 using Library.Api.Models.Books.Exceptions;
 using Moq;
@@ -43,8 +40,8 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Books
                 broker.LogError(It.Is(SameExceptionAs(epectedBookValidationException))),
                     Times.Once);
 
-             this.storageBrokerMock.VerifyNoOtherCalls();
-             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
 
         [Fact]
@@ -54,12 +51,12 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Books
             Guid someBookId = Guid.NewGuid();
             Book noBook = null;
 
-            var notFoundBookException = 
+            var notFoundBookException =
                 new NotFoundBookException(someBookId);
 
-            var expectedBookValidationException = 
+            var expectedBookValidationException =
                 new BookValidationException(notFoundBookException);
-             
+
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectBookByIdAsync(someBookId))
                     .ReturnsAsync(noBook);
@@ -81,8 +78,8 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Books
                     SameExceptionAs(expectedBookValidationException))),
                         Times.Once);
 
-             this.storageBrokerMock.VerifyNoOtherCalls();
-             this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

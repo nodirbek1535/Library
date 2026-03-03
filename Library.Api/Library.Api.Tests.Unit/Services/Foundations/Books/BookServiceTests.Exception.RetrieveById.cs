@@ -2,9 +2,6 @@
 //@nodirbek1535 library api program (C)
 //===============================================
 
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Library.Api.Models.Books;
 using Library.Api.Models.Books.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -37,7 +34,7 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Books
 
             //then
             await Assert.ThrowsAsync<BookDependencyException>(() =>
-                retrieveBookByIdTask.AsTask()); 
+                retrieveBookByIdTask.AsTask());
 
             this.storageBrokerMock.Verify(broker =>
                 broker.SelectBookByIdAsync(someBookId),

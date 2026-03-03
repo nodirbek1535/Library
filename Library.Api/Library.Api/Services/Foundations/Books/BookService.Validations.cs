@@ -3,11 +3,8 @@
 //===============================================
 
 
-using System.Reflection.Metadata;
 using Library.Api.Models.Books;
 using Library.Api.Models.Books.Exceptions;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.Win32.SafeHandles;
 
 namespace Library.Api.Services.Foundations.Books
 {
