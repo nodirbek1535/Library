@@ -8,6 +8,7 @@ using EFxceptions.Models.Exceptions;
 using Library.Api.Models.Books;
 using Library.Api.Models.Books.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Xeptions;
 
 namespace Library.Api.Services.Foundations.Books
@@ -43,6 +44,11 @@ namespace Library.Api.Services.Foundations.Books
             {
                 var alreadyExistsBookException = new AlreadyExistBookException(duplicateKeyException);
                 throw CreateAndLogDependencyValidationException(alreadyExistsBookException);
+            }
+            catch(DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedBookException = new LockedBookException(dbUpdateConcurrencyException);
+                throw CreateAndLogDependencyValidationException(lockedBookException);
             }
             catch(Exception exception)
             {

@@ -4,6 +4,7 @@ using System.Text;
 using Library.Api.Models.Books;
 using Library.Api.Models.Books.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 
 namespace Library.Api.Tests.Unit.Services.Foundations.Books
@@ -44,6 +45,45 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Books
                 broker.LogCritical(It.Is
                 (SameExceptionAs(expectedBookDependencyException))),
                     Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnModifyIfDbUpdateConcurrencyOccursAndLogItAsync()
+        {
+            //given
+            Book someBook = CreateRandomBook();
+            Guid bookId = someBook.Id;
+            var dbUpdateConcurrencyException = new DbUpdateConcurrencyException();
+
+            var lockedBookException =
+                new LockedBookException(dbUpdateConcurrencyException);
+
+            var expectedBookDependencyValidationException =
+                new BookDependencyValidationException(lockedBookException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectBookByIdAsync(bookId))
+                    .ThrowsAsync(dbUpdateConcurrencyException);
+
+            //when
+            ValueTask<Book> modifyBookTask =
+                this.bookService.ModifyBookAsync(someBook);
+
+            //then
+            await Assert.ThrowsAsync<BookDependencyValidationException>(() =>
+                modifyBookTask.AsTask());
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectBookByIdAsync(bookId),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is
+                    (SameExceptionAs(expectedBookDependencyValidationException))),
+                        Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
