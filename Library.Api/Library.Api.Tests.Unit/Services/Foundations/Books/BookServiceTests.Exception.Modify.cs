@@ -119,7 +119,7 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Books
                     Times.Once);
 
             this.loggingBrokerMock.Verify(broker =>
-                broker.LogCritical(It.Is
+                broker.LogError(It.Is
                     (SameExceptionAs(expectedBookDependencyException))),
                         Times.Once);
 
