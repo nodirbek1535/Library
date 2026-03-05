@@ -47,7 +47,7 @@ namespace Library.Api.Services.Foundations.Books
             catch (DbUpdateException dbUpdateException)
             {
                 var failedBookStorageException = new FailedBookStorageException(dbUpdateException);
-                throw CreateAndLogCriticalDependencyException(failedBookStorageException);
+                throw CreateAndLogDependencyException(failedBookStorageException);
             }
             catch (DuplicateKeyException duplicateKeyException)
             {

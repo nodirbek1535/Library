@@ -35,7 +35,7 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Books
             //when
             ValueTask<Book> removeBookTask =
                 this.bookService.RemoveBookByIdAsync(someBookId);
-            
+
             //then
             await Assert.ThrowsAsync<BookDependencyException>(() =>
                 removeBookTask.AsTask());
@@ -82,6 +82,44 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Books
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedBookDependencyValidationException))),
                         Times.Once);
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnRemoveIfDbUpdateErrorOccursAndLogItAsync()
+        {
+            //given
+            Guid someBookId = Guid.NewGuid();
+            var dbUpdateException = new DbUpdateException();
+
+            var failedBookStorageException =
+                new FailedBookStorageException(dbUpdateException);
+
+            var expectedBookDependencyException =
+                new BookDependencyException(failedBookStorageException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectBookByIdAsync(someBookId))
+                    .ThrowsAsync(dbUpdateException);
+
+            //when
+            ValueTask<Book> removeBookTask =
+                this.bookService.RemoveBookByIdAsync(someBookId);
+
+            //then
+            await Assert.ThrowsAsync<BookDependencyException>(() =>
+                removeBookTask.AsTask());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedBookDependencyException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectBookByIdAsync(someBookId),
+                    Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }
