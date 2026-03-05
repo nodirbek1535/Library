@@ -121,5 +121,43 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Books
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRemoveIfServiceErrorOccursAndLofItAsync()
+        {
+            //given
+            Guid someBookId = Guid.NewGuid();   
+            var exception = new Exception();
+
+            var failedBookServiceException =
+                new FailedBookServiceException(exception);
+
+            var expectedBookServiceException =
+                new BookServiceException(failedBookServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectBookByIdAsync(someBookId))
+                    .ThrowsAsync(exception);
+
+            //when
+            ValueTask<Book> removeBookTask =
+                this.bookService.RemoveBookByIdAsync(someBookId);
+
+            //then
+            await Assert.ThrowsAsync<BookServiceException>(() =>
+                removeBookTask.AsTask());
+
+            this.loggingBrokerMock.Verify(brokers =>
+                brokers.LogError(It.Is(SameExceptionAs(
+                    expectedBookServiceException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectBookByIdAsync(someBookId),
+                    Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
