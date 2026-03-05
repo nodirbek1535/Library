@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Library.Api.Migrations
 {
     [DbContext(typeof(StorageBroker))]
-    [Migration("20260202121640_InitialCreateAllTables")]
-    partial class InitialCreateAllTables
+    [Migration("20260305180000_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -48,7 +48,47 @@ namespace Library.Api.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ReaderId");
+
                     b.ToTable("Books");
+                });
+
+            modelBuilder.Entity("Library.Api.Models.Readers.Reader", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Age")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Readers");
+                });
+
+            modelBuilder.Entity("Library.Api.Models.Books.Book", b =>
+                {
+                    b.HasOne("Library.Api.Models.Readers.Reader", "Reader")
+                        .WithMany("Books")
+                        .HasForeignKey("ReaderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Reader");
+                });
+
+            modelBuilder.Entity("Library.Api.Models.Readers.Reader", b =>
+                {
+                    b.Navigation("Books");
                 });
 #pragma warning restore 612, 618
         }
