@@ -7,7 +7,7 @@ using Xeptions;
 
 namespace Library.Api.Models.Books.Exceptions
 {
-    public class NotFoundBookException:Xeption
+    public class NotFoundBookException : Xeption
     {
         public NotFoundBookException(Guid bookId)
             : base(message: $"Couldn't find book with id: {bookId}")

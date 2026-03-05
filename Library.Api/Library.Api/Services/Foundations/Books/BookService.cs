@@ -7,7 +7,6 @@ using Library.Api.Brokers.Storages;
 using Library.Api.Models.Books;
 using Library.Api.Models.Books.Exceptions;
 using Microsoft.Data.SqlClient;
-using Microsoft.Identity.Client;
 
 namespace Library.Api.Services.Foundations.Books
 {
@@ -53,7 +52,7 @@ namespace Library.Api.Services.Foundations.Books
                     new FailedBookServiceException(sqlException);
 
                 var bookDependencyException =
-                    new BookDependencyException(failedBookServiceException);    
+                    new BookDependencyException(failedBookServiceException);
 
                 this.loggingBroker.LogCritical(bookDependencyException);
 
@@ -78,12 +77,25 @@ namespace Library.Api.Services.Foundations.Books
             {
                 ValidateBookOnModify(book);
 
-                Book maybeBook = 
+                Book maybeBook =
                     await this.storageBroker.SelectBookByIdAsync(book.Id);
 
                 ValidateStorageBook(maybeBook, book.Id);
 
                 return await this.storageBroker.UpdateBookAsync(book);
+            });
+
+        public ValueTask<Book> RemoveBookByIdAsync(Guid bookId) =>
+            TryCatch(async () =>
+            {
+                ValidateBookId(bookId);
+
+                Book maybeBook =
+                    await this.storageBroker.SelectBookByIdAsync(bookId);
+
+                ValidateStorageBook(maybeBook, bookId);
+
+                return await this.storageBroker.DeleteBookAsync(maybeBook);
             });
     }
 }

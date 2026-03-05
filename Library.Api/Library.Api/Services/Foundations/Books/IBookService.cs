@@ -17,5 +17,6 @@ namespace Library.Api.Services.Foundations.Books
         ValueTask<Book> RetrieveBookByIdAsync(Guid bookId);
         IQueryable<Book> RetrieveAllBooks();
         ValueTask<Book> ModifyBookAsync(Book book);
+        ValueTask<Book> RemoveBookByIdAsync(Guid bookId);
     }
 }

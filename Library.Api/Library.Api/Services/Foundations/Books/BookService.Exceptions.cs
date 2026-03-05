@@ -3,7 +3,6 @@
 //===============================================
 
 
-using System.Data;
 using EFxceptions.Models.Exceptions;
 using Library.Api.Models.Books;
 using Library.Api.Models.Books.Exceptions;
@@ -23,39 +22,39 @@ namespace Library.Api.Services.Foundations.Books
             {
                 return await returningBookFunction();
             }
-            catch(NullBookException nullBookException)
+            catch (NullBookException nullBookException)
             {
                 throw CreateAndLogValidationException(nullBookException);
             }
-            catch(InvalidBookException invalidBookException)
+            catch (InvalidBookException invalidBookException)
             {
                 throw CreateAndLogValidationException(invalidBookException);
             }
-            catch(NotFoundBookException notFoundBookException)
+            catch (NotFoundBookException notFoundBookException)
             {
                 throw CreateAndLogValidationException(notFoundBookException);
             }
-            catch(SqlException sqlException)
+            catch (SqlException sqlException)
             {
                 var failedBookStorageException = new FailedBookStorageException(sqlException);
                 throw CreateAndLogCriticalDependencyException(failedBookStorageException);
             }
-            catch(DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
                 var lockedBookException = new LockedBookException(dbUpdateConcurrencyException);
                 throw CreateAndLogDependencyValidationException(lockedBookException);
             }
-            catch(DbUpdateException dbUpdateException)
+            catch (DbUpdateException dbUpdateException)
             {
                 var failedBookStorageException = new FailedBookStorageException(dbUpdateException);
-                throw CreateAndLogCriticalDependencyException(failedBookStorageException);
+                throw CreateAndLogDependencyException(failedBookStorageException);
             }
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsBookException = new AlreadyExistBookException(duplicateKeyException);
                 throw CreateAndLogDependencyValidationException(alreadyExistsBookException);
             }
-            catch(Exception exception)
+            catch (Exception exception)
             {
                 var failedBookServiceException = new FailedBookServiceException(exception);
                 throw CreateAndLogServiceException(failedBookServiceException);
@@ -101,12 +100,12 @@ namespace Library.Api.Services.Foundations.Books
 
         private BookDependencyException CreateAndLogDependencyException(Xeption exception)
         {
-            var bookDependencyException = 
+            var bookDependencyException =
                 new BookDependencyException(exception);
 
             this.loggingBroker.LogError(bookDependencyException);
 
             return bookDependencyException;
-        }   
+        }
     }
 }

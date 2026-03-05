@@ -2,9 +2,6 @@
 //@nodirbek1535 library api program (C)
 //===============================================
 
-using System;
-using System.Collections.Generic;
-using System.Text;
 using FluentAssertions;
 using Library.Api.Models.Books;
 using Moq;
@@ -34,7 +31,7 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Books
             this.storageBrokerMock.Verify(broker =>
                     broker.SelectAllBooks(),
                         Times.Once);
-    
+
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
         }
