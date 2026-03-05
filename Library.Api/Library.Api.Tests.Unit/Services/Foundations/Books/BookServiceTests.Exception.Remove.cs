@@ -8,6 +8,7 @@ using System.Text;
 using Library.Api.Models.Books;
 using Library.Api.Models.Books.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 
 namespace Library.Api.Tests.Unit.Services.Foundations.Books
@@ -50,6 +51,37 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Books
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnRemoveIfDbUpdateConcurrencyException()
+        {
+            //given
+            Guid someBookId = Guid.NewGuid();
+            var dbUpdateConcurrencyException = new DbUpdateConcurrencyException();
+
+            var lockedBookException =
+                new LockedBookException(dbUpdateConcurrencyException);
+
+            var expectedBookDependencyValidationException =
+                new BookDependencyValidationException(lockedBookException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectBookByIdAsync(someBookId))
+                    .ThrowsAsync(dbUpdateConcurrencyException);
+
+            //when
+            ValueTask<Book> removeBookTask =
+                this.bookService.RemoveBookByIdAsync(someBookId);
+
+            //then
+            await Assert.ThrowsAsync<BookDependencyValidationException>(() =>
+                removeBookTask.AsTask());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedBookDependencyValidationException))),
+                        Times.Once);
         }
     }
 }
