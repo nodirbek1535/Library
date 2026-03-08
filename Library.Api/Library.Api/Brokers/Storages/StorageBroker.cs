@@ -4,6 +4,7 @@
 
 using EFxceptions;
 using Library.Api.Models.Books;
+using Library.Api.Models.Readers;
 using Microsoft.EntityFrameworkCore;
 
 namespace Library.Api.Brokers.Storages
@@ -68,6 +69,16 @@ namespace Library.Api.Brokers.Storages
             await broker.SaveChangesAsync();
 
             return book;
+        }
+
+        //READERS
+        async ValueTask<Reader> IStorageBroker.InsertReaderAsync(Reader reader)
+            {
+                var broker = new StorageBroker(this.configuration);
+                broker.Entry(reader).State = EntityState.Added;
+                await broker.SaveChangesAsync();
+    
+                return reader;
         }
     }
 }
