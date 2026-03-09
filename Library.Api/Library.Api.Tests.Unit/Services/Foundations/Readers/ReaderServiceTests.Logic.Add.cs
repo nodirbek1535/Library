@@ -39,6 +39,7 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Readers
                     Times.Once);
 
             this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
         }
     }
 }

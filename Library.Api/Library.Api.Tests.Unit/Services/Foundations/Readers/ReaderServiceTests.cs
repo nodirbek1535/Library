@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Text;
 using Library.Api.Brokers.Loggings;
 using Library.Api.Brokers.Storages;
@@ -11,6 +12,7 @@ using Library.Api.Models.Readers;
 using Library.Api.Services.Foundations.Readers;
 using Moq;
 using Tynamix.ObjectFiller;
+using Xeptions;
 
 namespace Library.Api.Tests.Unit.Services.Foundations.Readers
 {
@@ -33,6 +35,9 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Readers
 
         private static Reader CreateRandomReader() =>
             CreateReaderFiller().Create();
+
+        private Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
+            actualException => actualException.SameExceptionAs(expectedException);
 
         private static Filler<Reader> CreateReaderFiller()
         {
