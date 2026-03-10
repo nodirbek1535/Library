@@ -23,26 +23,12 @@ namespace Library.Api.Services.Foundations.Readers
             this.loggingBroker = loggingBroker;
         }
 
-        public async ValueTask<Reader> AddReaderAsync(Reader reader)
-        {
-            try
+        public ValueTask<Reader> AddReaderAsync(Reader reader) =>
+            TryCatch(async () =>
             {
-                if (reader is null)
-                {
-                    throw new NullReaderException();
-                }
+                ValidateReaderOnAdd(reader);
 
                 return await this.storageBroker.InsertReaderAsync(reader);
-            }
-            catch (NullReaderException nullReaderException)
-            {
-                var readerValidationException =
-                    new ReaderValidationException(nullReaderException);
-
-                this.loggingBroker.LogError(readerValidationException);
-
-                throw readerValidationException;
-            }
-        }
+            });
     }
 }
