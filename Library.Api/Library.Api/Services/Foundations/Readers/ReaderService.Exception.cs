@@ -5,6 +5,7 @@
 
 using Library.Api.Models.Readers;
 using Library.Api.Models.Readers.Exceptions;
+using Microsoft.Data.SqlClient;
 using Xeptions;
 
 namespace Library.Api.Services.Foundations.Readers
@@ -27,15 +28,37 @@ namespace Library.Api.Services.Foundations.Readers
             {
                 throw CreateAndLogValidationException(invalidReaderException);
             }
+            catch (SqlException sqlException)
+            {
+                var failedReaderStorageException =
+                    new FailedReaderStorageException(sqlException);
+                throw CreateAndLogCriticalDependencyException(failedReaderStorageException);
+            }
+            catch (Exception exception)
+            {
+                var failedReaderServiceException =
+                    new FailedReaderStorageException(exception);
+                throw CreateAndLogCriticalDependencyException(failedReaderServiceException);
+            }
         }
         private ReaderValidationException CreateAndLogValidationException(Xeption exception)
         {
-            var readerValidationException = 
+            var readerValidationException =
                 new ReaderValidationException(exception);
 
             this.loggingBroker.LogError(readerValidationException);
 
             return readerValidationException;
+        }
+
+        private ReaderDependencyException CreateAndLogCriticalDependencyException(Xeption exception)
+        {
+            var readerDependencyException =
+                new ReaderDependencyException(exception);
+
+            this.loggingBroker.LogCritical(readerDependencyException);
+
+            return readerDependencyException;
         }
     }
 }

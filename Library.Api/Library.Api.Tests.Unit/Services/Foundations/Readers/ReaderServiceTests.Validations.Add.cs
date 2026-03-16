@@ -51,7 +51,7 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Readers
         public async Task ShouldThrowValidationExceptionOnAddIfReaderIsInvalidAndLogItAsync(string invalidText)
         {
             //given
-            var invalidReader = new Reader 
+            var invalidReader = new Reader  
             {
                 Id = Guid.Empty,
                 FirstName = invalidText,
