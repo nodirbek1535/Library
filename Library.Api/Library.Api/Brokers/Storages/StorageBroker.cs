@@ -75,5 +75,9 @@ namespace Library.Api.Brokers.Storages
 
             return reader;
         }
+
+        async ValueTask<Reader> IStorageBroker.SelectReaderByIdAsync(Reader reader) =>
+            await this.Readers
+                .FirstOrDefaultAsync(r => r.Id == reader.Id);
     }
 }
