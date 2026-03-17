@@ -37,8 +37,8 @@ namespace Library.Api.Services.Foundations.Readers
             catch (Exception exception)
             {
                 var failedReaderServiceException =
-                    new FailedReaderStorageException(exception);
-                throw CreateAndLogCriticalDependencyException(failedReaderServiceException);
+                    new FailedReaderServiceException(exception);
+                throw CreateAndLogServiceException(failedReaderServiceException);
             }
         }
         private ReaderValidationException CreateAndLogValidationException(Xeption exception)
@@ -59,6 +59,16 @@ namespace Library.Api.Services.Foundations.Readers
             this.loggingBroker.LogCritical(readerDependencyException);
 
             return readerDependencyException;
+        }
+
+        private ReaderServiceException CreateAndLogServiceException(Xeption exception)
+        {
+            var readerServiceException =
+                new ReaderServiceException(exception);
+
+            this.loggingBroker.LogError(readerServiceException);
+
+            return readerServiceException;
         }
     }
 }
