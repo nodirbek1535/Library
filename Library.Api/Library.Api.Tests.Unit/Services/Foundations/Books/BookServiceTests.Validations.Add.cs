@@ -71,10 +71,6 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Books
                 key: nameof(Book.Genre),
                 values: "Text is required");
 
-            invalidBookException.AddData(
-                key: nameof(Book.ReaderId),
-                values: "Id is required");
-
             var expectedBookValidationException =
                 new BookValidationException(invalidBookException);
 
