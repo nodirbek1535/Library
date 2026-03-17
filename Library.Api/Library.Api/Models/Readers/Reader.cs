@@ -3,6 +3,7 @@
 //===============================================
 
 
+using System.Text.Json.Serialization;
 using Library.Api.Models.Books;
 
 namespace Library.Api.Models.Readers
@@ -10,9 +11,10 @@ namespace Library.Api.Models.Readers
     public class Reader
     {
         public Guid Id { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public int Age { get; set; }    
-        public List<Book> Books { get; set; }   
+        public string FirstName { get; set; } = default!;
+        public string LastName { get; set; } = default!;
+        public int Age { get; set; }
+        [JsonIgnore]
+        public List<Book>? Books { get; set; }
     }
 }

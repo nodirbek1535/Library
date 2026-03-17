@@ -5,10 +5,10 @@
 
 using Library.Api.Models.Readers;
 
-namespace Library.Api.Brokers.Storages
+namespace Library.Api.Services.Foundations.Readers
 {
-    public partial interface IStorageBroker
+    public interface IReaderService
     {
-        public ValueTask<Reader> InsertReaderAsync(Reader reader);
+        public ValueTask<Reader> AddReaderAsync(Reader reader);
     }
 }
