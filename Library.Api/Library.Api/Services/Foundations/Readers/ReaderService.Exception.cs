@@ -3,6 +3,7 @@
 //===============================================
 
 
+using EFxceptions.Models.Exceptions;
 using Library.Api.Models.Readers;
 using Library.Api.Models.Readers.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -34,6 +35,12 @@ namespace Library.Api.Services.Foundations.Readers
                     new FailedReaderStorageException(sqlException);
                 throw CreateAndLogCriticalDependencyException(failedReaderStorageException);
             }
+            catch(DuplicateKeyException duplicateKeyException)
+            {
+                var alreadyExistsReaderException =
+                    new AlreadyExistReaderException(duplicateKeyException);
+                throw CreateAndLogDependencyValidationException(alreadyExistsReaderException);
+            }
             catch (Exception exception)
             {
                 var failedReaderServiceException =
@@ -59,6 +66,14 @@ namespace Library.Api.Services.Foundations.Readers
             this.loggingBroker.LogCritical(readerDependencyException);
 
             return readerDependencyException;
+        }
+
+        private ReaderDependencyValidationException CreateAndLogDependencyValidationException(Xeption exception)
+        {
+            var readerDependencyValidationException =
+                new ReaderDependencyValidationException(exception);
+            this.loggingBroker.LogError(readerDependencyValidationException);
+            return readerDependencyValidationException;
         }
 
         private ReaderServiceException CreateAndLogServiceException(Xeption exception)

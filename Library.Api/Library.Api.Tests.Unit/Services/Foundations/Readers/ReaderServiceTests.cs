@@ -38,6 +38,9 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Readers
         private static Reader CreateRandomReader() =>
             CreateReaderFiller().Create();
 
+        private static string GetRandomString() =>
+            new MnemonicString().GetValue();
+
         private static SqlException GetSqlError() =>
             (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
 
