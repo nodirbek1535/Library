@@ -6,6 +6,7 @@ using EFxceptions;
 using Library.Api.Models.Books;
 using Library.Api.Models.Readers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Library.Api.Brokers.Storages
 {
@@ -16,7 +17,6 @@ namespace Library.Api.Brokers.Storages
         public StorageBroker(IConfiguration configuration)
         {
             this.configuration = configuration;
-            this.Database.Migrate();
         }
 
         protected IQueryable<T> SelectAll<T>() where T : class =>
@@ -24,6 +24,9 @@ namespace Library.Api.Brokers.Storages
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            optionsBuilder.ConfigureWarnings(w =>
+                w.Ignore(RelationalEventId.PendingModelChangesWarning));
+
             string connectionString =
                 this.configuration.GetConnectionString(name: "DefaultConnection");
 
@@ -35,50 +38,42 @@ namespace Library.Api.Brokers.Storages
         //BOOKS
         async ValueTask<Book> IStorageBroker.InsertBookAsync(Book book)
         {
-            var broker = new StorageBroker(this.configuration);
-            broker.Entry(book).State = EntityState.Added;
-            await broker.SaveChangesAsync();
+            this.Entry(book).State = EntityState.Added;
+            await this.SaveChangesAsync();
 
             return book;
         }
 
-        async ValueTask<Book> IStorageBroker.SelectBookByIdAsync(Guid bookId)
-        {
-            var broker = new StorageBroker(this.configuration);
-
-            return await broker.Books
+        async ValueTask<Book> IStorageBroker.SelectBookByIdAsync(Guid bookId) =>
+            await this.Books
                 .FirstOrDefaultAsync(book => book.Id == bookId);
-        }
 
         IQueryable<Book> IStorageBroker.SelectAllBooks() =>
             SelectAll<Book>();
 
         async ValueTask<Book> IStorageBroker.UpdateBookAsync(Book book)
         {
-            var broker = new StorageBroker(this.configuration);
-            broker.Entry(book).State = EntityState.Modified;
-            await broker.SaveChangesAsync();
+            this.Entry(book).State = EntityState.Added;
+            await this.SaveChangesAsync();
 
             return book;
         }
 
         async ValueTask<Book> IStorageBroker.DeleteBookAsync(Book book)
         {
-            var broker = new StorageBroker(this.configuration);
-            broker.Entry(book).State = EntityState.Deleted;
-            await broker.SaveChangesAsync();
+            this.Entry(book).State = EntityState.Added;
+            await this.SaveChangesAsync();
 
             return book;
         }
 
         //READERS
         async ValueTask<Reader> IStorageBroker.InsertReaderAsync(Reader reader)
-            {
-                var broker = new StorageBroker(this.configuration);
-                broker.Entry(reader).State = EntityState.Added;
-                await broker.SaveChangesAsync();
-    
-                return reader;
+        {
+            this.Entry(reader).State = EntityState.Added;
+            await this.SaveChangesAsync();
+
+            return reader;
         }
     }
 }

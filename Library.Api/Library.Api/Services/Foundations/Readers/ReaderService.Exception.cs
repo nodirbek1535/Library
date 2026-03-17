@@ -35,7 +35,7 @@ namespace Library.Api.Services.Foundations.Readers
                     new FailedReaderStorageException(sqlException);
                 throw CreateAndLogCriticalDependencyException(failedReaderStorageException);
             }
-            catch(DuplicateKeyException duplicateKeyException)
+            catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsReaderException =
                     new AlreadyExistReaderException(duplicateKeyException);

@@ -2,11 +2,8 @@
 //@nodirbek1535 library api program (C)
 //===============================================
 
-using System;
-using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Runtime.Serialization;
-using System.Text;
 using Library.Api.Brokers.Loggings;
 using Library.Api.Brokers.Storages;
 using Library.Api.Models.Readers;
@@ -41,8 +38,10 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Readers
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
 
+        #pragma warning disable SYSLIB0050 // Do not catch general exception types
         private static SqlException GetSqlError() =>
             (SqlException)FormatterServices.GetUninitializedObject(typeof(SqlException));
+        #pragma warning restore SYSLIB0050 // Do not catch general exception types
 
         private Expression<Func<Xeption, bool>> SameExceptionAs(Xeption expectedException) =>
             actualException => actualException.SameExceptionAs(expectedException);

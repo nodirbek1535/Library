@@ -5,6 +5,7 @@
 using Library.Api.Brokers.Loggings;
 using Library.Api.Brokers.Storages;
 using Library.Api.Services.Foundations.Books;
+using Library.Api.Services.Foundations.Readers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
 
@@ -30,6 +31,12 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<StorageBroker>();
+    db.Database.Migrate();
+}
 
 if (app.Environment.IsDevelopment())
 {
@@ -59,4 +66,5 @@ static void AddBrokers(IServiceCollection services)
 static void AddFoundationServices(IServiceCollection services)
 {
     services.AddTransient<IBookService, BookService>();
+    services.AddTransient<IReaderService, ReaderService>();
 }

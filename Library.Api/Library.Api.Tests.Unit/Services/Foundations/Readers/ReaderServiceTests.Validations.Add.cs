@@ -2,9 +2,6 @@
 //@nodirbek1535 library api program (C)
 //===============================================
 
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Library.Api.Models.Readers;
 using Library.Api.Models.Readers.Exceptions;
 using Moq;
@@ -17,7 +14,7 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Readers
         public async Task ShouldThrowValidationExceptionOnAddIfReaderIsNullAndLogItAsync()
         {
             //given
-            Reader nullReader = null;
+            Reader nullReader = null!;
             var nullReaderException = new NullReaderException();
 
             var expectedReaderValidationException =
@@ -48,14 +45,14 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Readers
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public async Task ShouldThrowValidationExceptionOnAddIfReaderIsInvalidAndLogItAsync(string invalidText)
+        public async Task ShouldThrowValidationExceptionOnAddIfReaderIsInvalidAndLogItAsync(string? invalidText)
         {
             //given
-            var invalidReader = new Reader  
+            var invalidReader = new Reader
             {
                 Id = Guid.Empty,
-                FirstName = invalidText,
-                LastName = invalidText,
+                FirstName = invalidText!,
+                LastName = invalidText!,
                 Age = 0
             };
 
@@ -67,7 +64,7 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Readers
 
             invalidReaderException.AddData(
                 key: nameof(Reader.FirstName),
-                values: "Text is required."); 
+                values: "Text is required.");
 
             invalidReaderException.AddData(
                 key: nameof(Reader.LastName),

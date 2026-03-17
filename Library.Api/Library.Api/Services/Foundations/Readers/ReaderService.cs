@@ -6,7 +6,6 @@
 using Library.Api.Brokers.Loggings;
 using Library.Api.Brokers.Storages;
 using Library.Api.Models.Readers;
-using Library.Api.Models.Readers.Exceptions;
 
 namespace Library.Api.Services.Foundations.Readers
 {

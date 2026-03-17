@@ -40,7 +40,7 @@ namespace Library.Api.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("ReaderId")
+                    b.Property<Guid?>("ReaderId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
@@ -76,9 +76,7 @@ namespace Library.Api.Migrations
                 {
                     b.HasOne("Library.Api.Models.Readers.Reader", "Reader")
                         .WithMany("Books")
-                        .HasForeignKey("ReaderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ReaderId");
 
                     b.Navigation("Reader");
                 });

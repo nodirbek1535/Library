@@ -3,7 +3,6 @@
 //===============================================
 
 
-using System.Data;
 using Library.Api.Models.Readers;
 using Library.Api.Models.Readers.Exceptions;
 
@@ -55,7 +54,7 @@ namespace Library.Api.Services.Foundations.Readers
 
             foreach ((dynamic rule, string parameter) in validations)
             {
-                if(rule.Condition)
+                if (rule.Condition)
                 {
                     invalidReaderException.UpsertDataList(
                         key: parameter,

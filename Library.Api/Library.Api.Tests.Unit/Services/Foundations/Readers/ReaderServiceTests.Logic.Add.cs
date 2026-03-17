@@ -2,9 +2,6 @@
 //@nodirbek1535 library api program (C)
 //===============================================
 
-using System;
-using System.Collections.Generic;
-using System.Text;
 using FluentAssertions;
 using Force.DeepCloner;
 using Library.Api.Models.Readers;

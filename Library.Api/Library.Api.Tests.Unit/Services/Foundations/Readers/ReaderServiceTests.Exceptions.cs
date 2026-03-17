@@ -2,9 +2,6 @@
 //@nodirbek1535 library api program (C)
 //===============================================
 
-using System;
-using System.Collections.Generic;
-using System.Text;
 using EFxceptions.Models.Exceptions;
 using Library.Api.Models.Readers;
 using Library.Api.Models.Readers.Exceptions;

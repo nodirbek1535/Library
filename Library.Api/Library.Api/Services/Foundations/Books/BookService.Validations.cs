@@ -18,8 +18,7 @@ namespace Library.Api.Services.Foundations.Books
                 (Rule: IsInvalid(book.Id), Parameter: nameof(Book.Id)),
                 (Rule: IsInvalid(book.Name), Parameter: nameof(Book.Name)),
                 (Rule: IsInvalid(book.Author), Parameter: nameof(Book.Author)),
-                (Rule: IsInvalid(book.Genre), Parameter: nameof(Book.Genre)),
-                (Rule: IsInvalid(book.ReaderId), Parameter: nameof(Book.ReaderId))
+                (Rule: IsInvalid(book.Genre), Parameter: nameof(Book.Genre))
                 );
         }
 

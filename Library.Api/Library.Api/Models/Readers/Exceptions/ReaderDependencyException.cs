@@ -7,10 +7,10 @@ using Xeptions;
 
 namespace Library.Api.Models.Readers.Exceptions
 {
-    public class ReaderDependencyException:Xeption
+    public class ReaderDependencyException : Xeption
     {
-        public ReaderDependencyException(Xeption innerException) 
-            :base("Reader dependency error  occurred, contact support.", innerException)
+        public ReaderDependencyException(Xeption innerException)
+            : base("Reader dependency error  occurred, contact support.", innerException)
         { }
     }
 }
