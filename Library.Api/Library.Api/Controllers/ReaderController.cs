@@ -47,5 +47,29 @@ namespace Library.Api.Controllers
                 return InternalServerError(readerServiceException.InnerException);
             }
         }
+
+        [HttpGet("{readerId}")]
+        public async ValueTask<ActionResult> GetReaderByIdAsync(Guid readerId)
+        {
+            try
+            {
+                Reader retrievedReader =
+                    await this.readerService.RetrieveReaderByIdAsync(readerId);
+
+                return Ok(retrievedReader);
+            }
+            catch (ReaderValidationException readerValidationException)
+            {
+                return BadRequest(readerValidationException.InnerException);
+            }
+            catch (ReaderDependencyException readerDependencyException)
+            {
+                return InternalServerError(readerDependencyException.InnerException);
+            }
+            catch (ReaderServiceException readerServiceException)
+            {
+                return InternalServerError(readerServiceException.InnerException);
+            }
+        }
     }
 }
