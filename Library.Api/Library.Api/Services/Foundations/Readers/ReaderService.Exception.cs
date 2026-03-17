@@ -29,6 +29,10 @@ namespace Library.Api.Services.Foundations.Readers
             {
                 throw CreateAndLogValidationException(invalidReaderException);
             }
+            catch(NotFoundReaderException notFoundReaderException)
+            {
+                throw CreateAndLogValidationException(notFoundReaderException);
+            }
             catch (SqlException sqlException)
             {
                 var failedReaderStorageException =

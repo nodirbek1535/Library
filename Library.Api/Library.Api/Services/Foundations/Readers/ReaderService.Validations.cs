@@ -30,6 +30,21 @@ namespace Library.Api.Services.Foundations.Readers
             }
         }
 
+        private void ValidateReaderId(Guid readerId)
+        {
+            Validate(
+                (Rule: IsInvalid(readerId), Parameter: nameof(Reader.Id))
+            );
+        }
+
+        private void ValidateStorageReader(Reader maybeReader, Guid readerId)
+        {
+            if (maybeReader is null)
+            {
+                throw new NotFoundReaderException(readerId);
+            }
+        }
+
         private static dynamic IsInvalid(Guid id) => new
         {
             Condition = id == Guid.Empty,

@@ -15,14 +15,15 @@ namespace Library.Api.Brokers.Storages
 
         public async ValueTask<Reader> InsertReaderAsync(Reader reader)
         {
-            using var broker = new StorageBroker(this.configuration);
-
             EntityEntry<Reader> readerEntityEntry =
-                await broker.Readers.AddAsync(reader);
+                await this.Readers.AddAsync(reader);
 
-            await broker.SaveChangesAsync();
+            await this.SaveChangesAsync();
 
             return readerEntityEntry.Entity;
         }
+
+        public async ValueTask<Reader> SelectReaderByIdAsync(Guid readerId) =>
+            await this.Readers.FirstOrDefaultAsync(r => r.Id == readerId);
     }
 }
