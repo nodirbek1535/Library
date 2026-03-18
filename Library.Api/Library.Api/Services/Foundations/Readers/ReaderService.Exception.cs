@@ -30,7 +30,7 @@ namespace Library.Api.Services.Foundations.Readers
             {
                 throw CreateAndLogValidationException(invalidReaderException);
             }
-            catch(NotFoundReaderException notFoundReaderException)
+            catch (NotFoundReaderException notFoundReaderException)
             {
                 throw CreateAndLogValidationException(notFoundReaderException);
             }
@@ -40,17 +40,23 @@ namespace Library.Api.Services.Foundations.Readers
                     new FailedReaderStorageException(sqlException);
                 throw CreateAndLogCriticalDependencyException(failedReaderStorageException);
             }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedReaderException =
+                    new LockedReaderException(dbUpdateConcurrencyException);
+                throw CreateAndLogDependencyValidationException(lockedReaderException);
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                var failedReaderStorageException =
+                    new FailedReaderStorageException(dbUpdateException);
+                throw CreateAndLogCriticalDependencyException(failedReaderStorageException);
+            }
             catch (DuplicateKeyException duplicateKeyException)
             {
                 var alreadyExistsReaderException =
                     new AlreadyExistReaderException(duplicateKeyException);
                 throw CreateAndLogDependencyValidationException(alreadyExistsReaderException);
-            }
-            catch(DbUpdateConcurrencyException dbUpdateConcurrencyException)
-            {
-                var lockedReaderException =
-                    new LockedReaderException(dbUpdateConcurrencyException);
-                throw CreateAndLogDependencyValidationException(lockedReaderException);
             }
             catch (Exception exception)
             {
