@@ -7,6 +7,7 @@ using EFxceptions.Models.Exceptions;
 using Library.Api.Models.Readers;
 using Library.Api.Models.Readers.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Xeptions;
 
 namespace Library.Api.Services.Foundations.Readers
@@ -29,7 +30,7 @@ namespace Library.Api.Services.Foundations.Readers
             {
                 throw CreateAndLogValidationException(invalidReaderException);
             }
-            catch(NotFoundReaderException notFoundReaderException)
+            catch (NotFoundReaderException notFoundReaderException)
             {
                 throw CreateAndLogValidationException(notFoundReaderException);
             }
@@ -37,6 +38,18 @@ namespace Library.Api.Services.Foundations.Readers
             {
                 var failedReaderStorageException =
                     new FailedReaderStorageException(sqlException);
+                throw CreateAndLogCriticalDependencyException(failedReaderStorageException);
+            }
+            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedReaderException =
+                    new LockedReaderException(dbUpdateConcurrencyException);
+                throw CreateAndLogDependencyValidationException(lockedReaderException);
+            }
+            catch (DbUpdateException dbUpdateException)
+            {
+                var failedReaderStorageException =
+                    new FailedReaderStorageException(dbUpdateException);
                 throw CreateAndLogCriticalDependencyException(failedReaderStorageException);
             }
             catch (DuplicateKeyException duplicateKeyException)

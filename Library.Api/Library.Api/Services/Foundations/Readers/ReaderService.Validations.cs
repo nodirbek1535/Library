@@ -22,6 +22,20 @@ namespace Library.Api.Services.Foundations.Readers
             );
         }
 
+        private void ValidateReaderOnModify(Reader reader)
+        {
+            ValidateReaderNotNull(reader);
+
+            ValidateReaderId(reader.Id);
+
+            Validate(
+                (Rule: IsInvalid(reader.Id), Parameter: nameof(Reader.Id)),
+                (Rule: IsInvalid(reader.FirstName), Parameter: nameof(Reader.FirstName)),
+                (Rule: IsInvalid(reader.LastName), Parameter: nameof(Reader.LastName)),
+                (Rule: IsInvalid(reader.Age), Parameter: nameof(Reader.Age))
+            );
+        }
+
         private void ValidateReaderNotNull(Reader reader)
         {
             if (reader is null)
