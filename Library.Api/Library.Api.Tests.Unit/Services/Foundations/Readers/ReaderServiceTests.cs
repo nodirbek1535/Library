@@ -35,6 +35,18 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Readers
         private static Reader CreateRandomReader() =>
             CreateReaderFiller().Create();
 
+        private static IQueryable<Reader> CreateRandomReaders()
+        {
+            int radnomNumber = GetRandomNumber();
+
+            return Enumerable.Range(0, radnomNumber)
+                .Select(_ => CreateRandomReader())
+                .AsQueryable();
+        }
+
+        public static int GetRandomNumber() =>
+            new IntRange(min: 2, max: 10).GetValue();
+
         private static string GetRandomString() =>
             new MnemonicString().GetValue();
 

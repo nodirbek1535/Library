@@ -25,5 +25,8 @@ namespace Library.Api.Brokers.Storages
 
         public async ValueTask<Reader> SelectReaderByIdAsync(Guid readerId) =>
             await this.Readers.FirstOrDefaultAsync(r => r.Id == readerId);
+
+        public IQueryable<Reader> SelectAllReaders() =>
+            SelectAll<Reader>();
     }
 }
