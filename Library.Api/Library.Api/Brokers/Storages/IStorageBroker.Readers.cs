@@ -9,7 +9,8 @@ namespace Library.Api.Brokers.Storages
 {
     public partial interface IStorageBroker
     {
-        public ValueTask<Reader> InsertReaderAsync(Reader reader);
-        public ValueTask<Reader> SelectReaderByIdAsync(Guid readerId);
+        ValueTask<Reader> InsertReaderAsync(Reader reader);
+        ValueTask<Reader> SelectReaderByIdAsync(Guid readerId);
+        IQueryable<Reader> SelectAllReaders();
     }
 }
