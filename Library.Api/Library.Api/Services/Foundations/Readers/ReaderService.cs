@@ -65,7 +65,12 @@ namespace Library.Api.Services.Foundations.Readers
                 var failedReaderServiceException =
                     new FailedReaderServiceException(exception);
 
-                throw new ReaderServiceException(failedReaderServiceException);
+                var readerServiceException =
+                    new ReaderServiceException(failedReaderServiceException);
+
+                this.loggingBroker.LogError(readerServiceException);
+
+                throw readerServiceException;
             }
         }
     }
