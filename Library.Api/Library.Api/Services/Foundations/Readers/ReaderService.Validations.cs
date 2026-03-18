@@ -25,6 +25,9 @@ namespace Library.Api.Services.Foundations.Readers
         private void ValidateReaderOnModify(Reader reader)
         {
             ValidateReaderNotNull(reader);
+
+            ValidateReaderId(reader.Id);
+
             Validate(
                 (Rule: IsInvalid(reader.Id), Parameter: nameof(Reader.Id)),
                 (Rule: IsInvalid(reader.FirstName), Parameter: nameof(Reader.FirstName)),

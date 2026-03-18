@@ -51,5 +51,46 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Readers
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfReaderIsInvalidAndLogItAsync()
+        {
+            //given
+            var invalidReader = new Reader
+            {
+                Id = Guid.Empty
+            };
+
+            var invalidReaderException = new InvalidReaderException();
+
+            invalidReaderException.AddData(
+                key: nameof(Reader.Id),
+                values: "Id is required.");
+
+            var expectedReaderValidationException =
+                new ReaderValidationException(invalidReaderException);
+
+            //when
+            ReaderValidationException actualReaderValidationException =
+                await Assert.ThrowsAsync<ReaderValidationException>(
+                    () => this.readerService.ModifyReaderAsync(invalidReader).AsTask());
+
+            //then
+            actualReaderValidationException
+                .SameExceptionAs(expectedReaderValidationException)
+                    .Should().BeTrue();
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedReaderValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectReaderByIdAsync(It.IsAny<Guid>()),
+                    Times.Never);
+
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+            this.storageBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
