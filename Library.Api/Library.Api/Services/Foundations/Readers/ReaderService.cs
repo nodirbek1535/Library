@@ -53,9 +53,12 @@ namespace Library.Api.Services.Foundations.Readers
                 var failedReaderServiceException =
                     new FailedReaderServiceException(sqlException);
 
-                this.loggingBroker.LogError(sqlException);
+                var readerDependencyException =
+                    new ReaderDependencyException(failedReaderServiceException);
 
-                throw new ReaderDependencyException(failedReaderServiceException);
+                this.loggingBroker.LogCritical(readerDependencyException);
+
+                throw readerDependencyException;
             }
             catch (Exception exception)
             {
