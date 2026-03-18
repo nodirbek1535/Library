@@ -7,6 +7,7 @@ using EFxceptions.Models.Exceptions;
 using Library.Api.Models.Readers;
 using Library.Api.Models.Readers.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Xeptions;
 
 namespace Library.Api.Services.Foundations.Readers
@@ -44,6 +45,12 @@ namespace Library.Api.Services.Foundations.Readers
                 var alreadyExistsReaderException =
                     new AlreadyExistReaderException(duplicateKeyException);
                 throw CreateAndLogDependencyValidationException(alreadyExistsReaderException);
+            }
+            catch(DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            {
+                var lockedReaderException =
+                    new LockedReaderException(dbUpdateConcurrencyException);
+                throw CreateAndLogDependencyValidationException(lockedReaderException);
             }
             catch (Exception exception)
             {
