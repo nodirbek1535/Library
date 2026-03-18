@@ -92,5 +92,49 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Readers
             this.loggingBrokerMock.VerifyNoOtherCalls();
             this.storageBrokerMock.VerifyNoOtherCalls();
         }
+
+        [Fact]
+        public async Task ShouldThrowValidationExceptionOnModifyIfReaderDoesNotExistAndLogItAsync()
+        {
+            //given
+            Reader randomReader = CreateRandomReader();
+            Reader nonExistingReader = randomReader;
+            Reader nullReader = null;
+
+            var notFoundReaderException =
+                new NotFoundReaderException(nonExistingReader.Id);
+
+            var expectedReaderValidationException =
+                new ReaderValidationException(notFoundReaderException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectReaderByIdAsync(nonExistingReader.Id))
+                    .ReturnsAsync(nullReader);
+
+            //when
+            ValueTask<Reader> modifyReaderTask =
+                this.readerService.ModifyReaderAsync(nonExistingReader);
+
+            ReaderValidationException actualReaderValidationException =
+                await Assert.ThrowsAsync<ReaderValidationException>(
+                    modifyReaderTask.AsTask);
+
+            //then
+            actualReaderValidationException
+                .SameExceptionAs(expectedReaderValidationException)
+                    .Should().BeTrue();
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectReaderByIdAsync(nonExistingReader.Id),
+                    Times.Once);
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedReaderValidationException))),
+                        Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
