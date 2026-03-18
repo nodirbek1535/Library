@@ -28,5 +28,15 @@ namespace Library.Api.Brokers.Storages
 
         public IQueryable<Reader> SelectAllReaders() =>
             SelectAll<Reader>();
+
+        public async ValueTask<Reader> UpdateReaderAsync(Reader reader)
+        {
+            EntityEntry<Reader> readerEntityEntry =
+                this.Readers.Update(reader);
+
+            await this.SaveChangesAsync();
+
+            return readerEntityEntry.Entity;
+        }
     }
 }

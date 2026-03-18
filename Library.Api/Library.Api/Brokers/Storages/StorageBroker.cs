@@ -82,5 +82,13 @@ namespace Library.Api.Brokers.Storages
 
         IQueryable<Reader> IStorageBroker.SelectAllReaders() =>
             SelectAll<Reader>();
+
+        async ValueTask<Reader> IStorageBroker.UpdateReaderAsync(Reader reader)
+        {
+            this.Entry(reader).State = EntityState.Added;
+            await this.SaveChangesAsync();
+
+            return reader;
+        }
     }
 }
