@@ -46,14 +46,16 @@ namespace Library.Api.Brokers.Storages
 
         async ValueTask<Book> IStorageBroker.SelectBookByIdAsync(Guid bookId) =>
             await this.Books
-                .FirstOrDefaultAsync(book => book.Id == bookId);
+                .Where(b => b.Id == bookId)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
 
         IQueryable<Book> IStorageBroker.SelectAllBooks() =>
             SelectAll<Book>();
 
         async ValueTask<Book> IStorageBroker.UpdateBookAsync(Book book)
         {
-            this.Entry(book).State = EntityState.Added;
+            this.Entry(book).State = EntityState.Modified;
             await this.SaveChangesAsync();
 
             return book;
@@ -78,14 +80,16 @@ namespace Library.Api.Brokers.Storages
 
         async ValueTask<Reader> IStorageBroker.SelectReaderByIdAsync(Guid readerId) =>
             await this.Readers
-                .FirstOrDefaultAsync(r => r.Id == readerId);
+                .Where(r => r.Id == readerId)
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
 
         IQueryable<Reader> IStorageBroker.SelectAllReaders() =>
             SelectAll<Reader>();
 
         async ValueTask<Reader> IStorageBroker.UpdateReaderAsync(Reader reader)
         {
-            this.Entry(reader).State = EntityState.Added;
+            this.Entry(reader).State = EntityState.Modified;
             await this.SaveChangesAsync();
 
             return reader;

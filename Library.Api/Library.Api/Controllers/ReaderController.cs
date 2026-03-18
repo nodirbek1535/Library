@@ -91,5 +91,38 @@ namespace Library.Api.Controllers
                 return InternalServerError(readerServiceException.InnerException);
             }
         }
+
+        [HttpPut]
+        public async ValueTask<ActionResult<Reader>> PutReaderAsync(Reader reader)
+        {
+            try
+            {
+                Reader modifiedReader =
+                    await this.readerService.ModifyReaderAsync(reader);
+
+                return Ok(modifiedReader);
+            }
+            catch (ReaderValidationException readerValidationException)
+            {
+                return BadRequest(readerValidationException.InnerException);
+            }
+            catch (ReaderDependencyValidationException readerDependencyValidationException)
+                when (readerDependencyValidationException.InnerException is LockedReaderException)
+            {
+                return Locked(readerDependencyValidationException.InnerException);
+            }
+            catch (ReaderDependencyValidationException readerDependencyValidationException)
+            {
+                return BadRequest(readerDependencyValidationException.InnerException);
+            }
+            catch (ReaderDependencyException readerDependencyException)
+            {
+                return InternalServerError(readerDependencyException.InnerException);
+            }
+            catch (ReaderServiceException readerServiceException)
+            {
+                return InternalServerError(readerServiceException.InnerException);
+            }
+        }
     }
 }
