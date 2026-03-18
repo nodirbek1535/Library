@@ -73,5 +73,18 @@ namespace Library.Api.Services.Foundations.Readers
                 throw readerServiceException;
             }
         }
+
+        public ValueTask<Reader> ModifyReaderAsync(Reader reader) =>
+            TryCatch(async () =>
+            {
+                ValidateReaderOnModify(reader);
+
+                Reader maybeReader =
+                    await this.storageBroker.SelectReaderByIdAsync(reader.Id);
+
+                ValidateStorageReader(maybeReader, reader.Id);
+
+                return await this.storageBroker.UpdateReaderAsync(reader);
+            });
     }
 }
