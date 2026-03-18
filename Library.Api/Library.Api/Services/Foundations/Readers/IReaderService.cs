@@ -11,5 +11,6 @@ namespace Library.Api.Services.Foundations.Readers
     {
         public ValueTask<Reader> AddReaderAsync(Reader reader);
         public ValueTask<Reader> RetrieveReaderByIdAsync(Guid readerId);
+        public IQueryable<Reader> RetrieveAllReaders();
     }
 }

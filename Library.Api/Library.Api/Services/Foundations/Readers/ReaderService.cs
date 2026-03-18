@@ -6,6 +6,8 @@
 using Library.Api.Brokers.Loggings;
 using Library.Api.Brokers.Storages;
 using Library.Api.Models.Readers;
+using Library.Api.Models.Readers.Exceptions;
+using Microsoft.Data.SqlClient;
 
 namespace Library.Api.Services.Foundations.Readers
 {
@@ -39,5 +41,29 @@ namespace Library.Api.Services.Foundations.Readers
 
                 return maybeReader;
             });
+
+        public IQueryable<Reader> RetrieveAllReaders()
+        {
+            try
+            {
+                return this.storageBroker.SelectAllReaders();
+            }
+            catch (SqlException sqlException)
+            {
+                var failedReaderServiceException =
+                    new FailedReaderServiceException(sqlException);
+
+                this.loggingBroker.LogError(sqlException);
+
+                throw new ReaderDependencyException(failedReaderServiceException);
+            }
+            catch (Exception exception)
+            {
+                var failedReaderServiceException =
+                    new FailedReaderServiceException(exception);
+
+                throw new ReaderServiceException(failedReaderServiceException);
+            }
+        }
     }
 }
