@@ -2,9 +2,6 @@
 //@nodirbek1535 library api program (C)
 //===============================================
 
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Library.Api.Models.Readers;
 using Library.Api.Models.Readers.Exceptions;
 using Microsoft.Data.SqlClient;
@@ -112,6 +109,44 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Readers
             this.loggingBrokerMock.Verify(broker =>
                 broker.LogError(It.Is(SameExceptionAs(
                     expectedReaderDependencyException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectReaderByIdAsync(someReaderId),
+                    Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowServiceExceptionOnRemoveIfServiceErrorOccursAndLofItAsync()
+        {
+            //given
+            Guid someReaderId = Guid.NewGuid();
+            var exception = new Exception();
+
+            var failedReaderServiceException =
+                new FailedReaderServiceException(exception);
+
+            var expectedReaderServiceException =
+                new ReaderServiceException(failedReaderServiceException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectReaderByIdAsync(someReaderId))
+                    .ThrowsAsync(exception);
+
+            //when
+            ValueTask<Reader> removeReaderTask =
+                this.readerService.RemoveReaderByIdAsync(someReaderId);
+
+            //then
+            await Assert.ThrowsAsync<ReaderServiceException>(() =>
+                removeReaderTask.AsTask());
+
+            this.loggingBrokerMock.Verify(brokers =>
+                brokers.LogError(It.Is(SameExceptionAs(
+                    expectedReaderServiceException))),
                         Times.Once);
 
             this.storageBrokerMock.Verify(broker =>
