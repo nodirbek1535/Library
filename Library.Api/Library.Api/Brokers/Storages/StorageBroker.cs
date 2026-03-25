@@ -63,7 +63,7 @@ namespace Library.Api.Brokers.Storages
 
         async ValueTask<Book> IStorageBroker.DeleteBookAsync(Book book)
         {
-            this.Entry(book).State = EntityState.Added;
+            this.Entry(book).State = EntityState.Deleted;
             await this.SaveChangesAsync();
 
             return book;
@@ -90,6 +90,14 @@ namespace Library.Api.Brokers.Storages
         async ValueTask<Reader> IStorageBroker.UpdateReaderAsync(Reader reader)
         {
             this.Entry(reader).State = EntityState.Modified;
+            await this.SaveChangesAsync();
+
+            return reader;
+        }
+
+        async ValueTask<Reader> IStorageBroker.DeleteReaderAsync(Reader reader)
+        {
+            this.Entry(reader).State = EntityState.Deleted;
             await this.SaveChangesAsync();
 
             return reader;
