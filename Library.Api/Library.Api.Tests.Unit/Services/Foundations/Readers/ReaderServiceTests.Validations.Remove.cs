@@ -11,6 +11,42 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Readers
     public partial class ReaderServiceTests
     {
         [Fact]
+        public async Task ShouldThrowValidationExceptionOnRemoveIfReaderIdIsInvalidAndLogItAsync()
+        {
+            //given
+            Guid invalidReaderId = Guid.Empty;
+
+            var invalidReaderException =
+                new InvalidReaderException();
+
+            invalidReaderException.AddData(
+                key: nameof(Reader.Id),
+                values: "Id is required.");
+
+            var expectedReaderValidationException =
+                new ReaderValidationException(invalidReaderException);
+
+            //when
+            ValueTask<Reader> removeReaderTask =
+                this.readerService.RemoveReaderByIdAsync(invalidReaderId);
+
+            //then
+            await Assert.ThrowsAsync<ReaderValidationException>(() =>
+                removeReaderTask.AsTask());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(expectedReaderValidationException))),
+                    Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectReaderByIdAsync(It.IsAny<Guid>()),
+                    Times.Never);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
         public async Task ShouldThrowValidationsExceptionOnRemoveIfReaderDoesNotExistAndLogItAsync()
         {
             //given
