@@ -87,7 +87,7 @@ namespace Library.Api.Services.Foundations.Readers
                 return await this.storageBroker.UpdateReaderAsync(reader);
             });
 
-        public ValueTask<Reader> RemoveReaderById(Guid readerId) =>
+        public ValueTask<Reader> RemoveReaderByIdAsync(Guid readerId) =>
             TryCatch(async () =>
             {
                 ValidateReaderId(readerId);
