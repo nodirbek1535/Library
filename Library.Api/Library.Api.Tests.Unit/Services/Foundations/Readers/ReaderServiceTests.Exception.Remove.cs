@@ -8,6 +8,7 @@ using System.Text;
 using Library.Api.Models.Readers;
 using Library.Api.Models.Readers.Exceptions;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 
 namespace Library.Api.Tests.Unit.Services.Foundations.Readers
@@ -50,6 +51,37 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Readers
 
             this.storageBrokerMock.VerifyNoOtherCalls();
             this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
+
+        [Fact]
+        public async Task ShouldThrowDependencyValidationExceptionOnRemoveIfDbUpdateConcurrencyException()
+        {
+            //given
+            Guid someReaderId = Guid.NewGuid();
+            var dbUpdateConcurrencyException = new DbUpdateConcurrencyException();
+
+            var lockedReaderException =
+                new LockedReaderException(dbUpdateConcurrencyException);
+
+            var expectedReaderDependencyValidationException =
+                new ReaderDependencyValidationException(lockedReaderException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectReaderByIdAsync(someReaderId))
+                    .ThrowsAsync(dbUpdateConcurrencyException);
+
+            //when
+            ValueTask<Reader> removeReaderTask =
+                this.readerService.RemoveReaderByIdAsync(someReaderId);
+
+            //then
+            await Assert.ThrowsAsync<ReaderDependencyValidationException>(() =>
+                removeReaderTask.AsTask());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedReaderDependencyValidationException))),
+                        Times.Once);
         }
     }
 }
