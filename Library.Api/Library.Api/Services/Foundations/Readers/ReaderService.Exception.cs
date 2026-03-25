@@ -50,7 +50,7 @@ namespace Library.Api.Services.Foundations.Readers
             {
                 var failedReaderStorageException =
                     new FailedReaderStorageException(dbUpdateException);
-                throw CreateAndLogCriticalDependencyException(failedReaderStorageException);
+                throw CreateAndLogDependencyException(failedReaderStorageException);
             }
             catch (DuplicateKeyException duplicateKeyException)
             {
@@ -101,6 +101,16 @@ namespace Library.Api.Services.Foundations.Readers
             this.loggingBroker.LogError(readerServiceException);
 
             return readerServiceException;
+        }
+
+        private ReaderDependencyException CreateAndLogDependencyException(Xeption exception)
+        {
+            var readerDependencyException =
+                new ReaderDependencyException(exception);
+
+            this.loggingBroker.LogError(readerDependencyException);
+
+            return readerDependencyException;
         }
     }
 }

@@ -83,5 +83,43 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Readers
                     expectedReaderDependencyValidationException))),
                         Times.Once);
         }
+
+        [Fact]
+        public async Task ShouldThrowDependencyExceptionOnRemoveIfDbUpdateErrorOccursAndLogItAsync()
+        {
+            //given
+            Guid someReaderId = Guid.NewGuid();
+            var dbUpdateException = new DbUpdateException();
+
+            var failedReaderStorageException =
+                new FailedReaderStorageException(dbUpdateException);
+
+            var expectedReaderDependencyException =
+                new ReaderDependencyException(failedReaderStorageException);
+
+            this.storageBrokerMock.Setup(broker =>
+                broker.SelectReaderByIdAsync(someReaderId))
+                    .ThrowsAsync(dbUpdateException);
+
+            //when
+            ValueTask<Reader> removeReaderTask =
+                this.readerService.RemoveReaderByIdAsync(someReaderId);
+
+            //then
+            await Assert.ThrowsAsync<ReaderDependencyException>(() =>
+                removeReaderTask.AsTask());
+
+            this.loggingBrokerMock.Verify(broker =>
+                broker.LogError(It.Is(SameExceptionAs(
+                    expectedReaderDependencyException))),
+                        Times.Once);
+
+            this.storageBrokerMock.Verify(broker =>
+                broker.SelectReaderByIdAsync(someReaderId),
+                    Times.Once);
+
+            this.storageBrokerMock.VerifyNoOtherCalls();
+            this.loggingBrokerMock.VerifyNoOtherCalls();
+        }
     }
 }
