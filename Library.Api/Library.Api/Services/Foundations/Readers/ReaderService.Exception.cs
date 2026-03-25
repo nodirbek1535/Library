@@ -40,6 +40,13 @@ namespace Library.Api.Services.Foundations.Readers
                     new FailedReaderStorageException(sqlException);
                 throw CreateAndLogCriticalDependencyException(failedReaderStorageException);
             }
+            catch (ForeignKeyConstraintConflictException foreignKeyException)
+            {
+                var invalidReaderReferenceException =
+                    new InvalidReaderReferenceException(foreignKeyException);
+
+                throw CreateAndLogDependencyValidationException(invalidReaderReferenceException);
+            }
             catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
             {
                 var lockedReaderException =
@@ -50,7 +57,7 @@ namespace Library.Api.Services.Foundations.Readers
             {
                 var failedReaderStorageException =
                     new FailedReaderStorageException(dbUpdateException);
-                throw CreateAndLogDependencyException(failedReaderStorageException);
+                throw CreateAndLogCriticalDependencyException(failedReaderStorageException);
             }
             catch (DuplicateKeyException duplicateKeyException)
             {
