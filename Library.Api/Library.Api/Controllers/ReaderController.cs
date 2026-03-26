@@ -124,5 +124,38 @@ namespace Library.Api.Controllers
                 return InternalServerError(readerServiceException.InnerException);
             }
         }
+
+        [HttpDelete("{readerId}")]
+        public async ValueTask<ActionResult> DeleteReaderByIdAsync(Guid readerId)
+        {
+            try
+            {
+                Reader deletedReader =
+                    await this.readerService.RemoveReaderByIdAsync(readerId);
+
+                return Ok(deletedReader);
+            }
+            catch (ReaderValidationException readerValidationException)
+            {
+                return BadRequest(readerValidationException.InnerException);
+            }
+            catch (ReaderDependencyValidationException readerDependencyValidationException)
+                when (readerDependencyValidationException.InnerException is LockedReaderException)
+            {
+                return Locked(readerDependencyValidationException.InnerException);
+            }
+            catch (ReaderDependencyValidationException readerDependencyValidationException)
+            {
+                return BadRequest(readerDependencyValidationException.InnerException);
+            }
+            catch (ReaderDependencyException readerDependencyException)
+            {
+                return InternalServerError(readerDependencyException.InnerException);
+            }
+            catch (ReaderServiceException readerServiceException)
+            {
+                return InternalServerError(readerServiceException.InnerException);
+            }
+        }
     }
 }

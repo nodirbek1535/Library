@@ -38,5 +38,15 @@ namespace Library.Api.Brokers.Storages
 
             return readerEntityEntry.Entity;
         }
+
+        public async ValueTask<Reader> DeleteReaderAsync(Reader reader)
+        {
+            EntityEntry<Reader> readerEntityEntry =
+                this.Readers.Remove(reader);
+
+            await this.SaveChangesAsync();
+
+            return reader;
+        }
     }
 }

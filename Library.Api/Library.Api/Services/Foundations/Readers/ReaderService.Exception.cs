@@ -15,6 +15,7 @@ namespace Library.Api.Services.Foundations.Readers
     public partial class ReaderService
     {
         private delegate ValueTask<Reader> ReturningReaderFunction();
+        private delegate IQueryable<Reader> ReturningReadersFunction();
 
         private async ValueTask<Reader> TryCatch(ReturningReaderFunction returningReaderFunction)
         {
@@ -22,49 +23,122 @@ namespace Library.Api.Services.Foundations.Readers
             {
                 return await returningReaderFunction();
             }
-            catch (NullReaderException nullReaderException)
+            catch (NullReaderException ex)
             {
-                throw CreateAndLogValidationException(nullReaderException);
+                throw CreateAndLogValidationException(ex);
             }
-            catch (InvalidReaderException invalidReaderException)
+            catch (InvalidReaderException ex)
             {
-                throw CreateAndLogValidationException(invalidReaderException);
+                throw CreateAndLogValidationException(ex);
             }
-            catch (NotFoundReaderException notFoundReaderException)
+            catch (NotFoundReaderException ex)
             {
-                throw CreateAndLogValidationException(notFoundReaderException);
+                throw CreateAndLogValidationException(ex);
             }
-            catch (SqlException sqlException)
+            catch (SqlException ex)
             {
-                var failedReaderStorageException =
-                    new FailedReaderStorageException(sqlException);
-                throw CreateAndLogCriticalDependencyException(failedReaderStorageException);
+                var failedStorageException = new FailedReaderStorageException(ex);
+                throw CreateAndLogCriticalDependencyException(failedStorageException);
             }
-            catch (DbUpdateConcurrencyException dbUpdateConcurrencyException)
+            catch (ForeignKeyConstraintConflictException ex)
             {
-                var lockedReaderException =
-                    new LockedReaderException(dbUpdateConcurrencyException);
-                throw CreateAndLogDependencyValidationException(lockedReaderException);
+                var invalidReferenceException = new InvalidReaderReferenceException(ex);
+                throw CreateAndLogDependencyValidationException(invalidReferenceException);
             }
-            catch (DbUpdateException dbUpdateException)
+            catch (DbUpdateConcurrencyException ex)
             {
-                var failedReaderStorageException =
-                    new FailedReaderStorageException(dbUpdateException);
-                throw CreateAndLogCriticalDependencyException(failedReaderStorageException);
+                var lockedException = new LockedReaderException(ex);
+                throw CreateAndLogDependencyValidationException(lockedException);
             }
-            catch (DuplicateKeyException duplicateKeyException)
+            catch (DbUpdateException ex)
             {
-                var alreadyExistsReaderException =
-                    new AlreadyExistReaderException(duplicateKeyException);
-                throw CreateAndLogDependencyValidationException(alreadyExistsReaderException);
+                var failedStorageException = new FailedReaderStorageException(ex);
+                throw CreateAndLogCriticalDependencyException(failedStorageException); // 🔥
             }
-            catch (Exception exception)
+            catch (DuplicateKeyException ex)
             {
-                var failedReaderServiceException =
-                    new FailedReaderServiceException(exception);
-                throw CreateAndLogServiceException(failedReaderServiceException);
+                var alreadyExistsException = new AlreadyExistReaderException(ex);
+                throw CreateAndLogDependencyValidationException(alreadyExistsException);
+            }
+            catch (Exception ex)
+            {
+                var failedServiceException = new FailedReaderServiceException(ex);
+                throw CreateAndLogServiceException(failedServiceException);
             }
         }
+
+        private async ValueTask<Reader> TryCatchRemove(ReturningReaderFunction returningReaderFunction)
+        {
+            try
+            {
+                return await returningReaderFunction();
+            }
+            catch (NullReaderException ex)
+            {
+                throw CreateAndLogValidationException(ex);
+            }
+            catch (InvalidReaderException ex)
+            {
+                throw CreateAndLogValidationException(ex);
+            }
+            catch (NotFoundReaderException ex)
+            {
+                throw CreateAndLogValidationException(ex);
+            }
+            catch (SqlException ex)
+            {
+                var failedStorageException = new FailedReaderStorageException(ex);
+                throw CreateAndLogCriticalDependencyException(failedStorageException); // 🔥
+            }
+            catch (ForeignKeyConstraintConflictException ex)
+            {
+                var invalidReferenceException = new InvalidReaderReferenceException(ex);
+                throw CreateAndLogDependencyValidationException(invalidReferenceException);
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                var lockedException = new LockedReaderException(ex);
+                throw CreateAndLogDependencyValidationException(lockedException);
+            }
+            catch (DbUpdateException ex)
+            {
+                var failedStorageException = new FailedReaderStorageException(ex);
+                throw CreateAndLogDependencyException(failedStorageException); // ❗
+            }
+            catch (DuplicateKeyException ex)
+            {
+                var alreadyExistsException = new AlreadyExistReaderException(ex);
+                throw CreateAndLogDependencyValidationException(alreadyExistsException);
+            }
+            catch (Exception ex)
+            {
+                var failedServiceException = new FailedReaderServiceException(ex);
+                throw CreateAndLogServiceException(failedServiceException);
+            }
+        }
+
+        private IQueryable<Reader> TryCatch(ReturningReadersFunction returningReadersFunction)
+        {
+            try
+            {
+                return returningReadersFunction();
+            }
+            catch (SqlException ex)
+            {
+                var failedStorageException =
+                    new FailedReaderStorageException(ex);
+
+                throw CreateAndLogCriticalDependencyException(failedStorageException);
+            }
+            catch (Exception ex)
+            {
+                var failedServiceException =
+                    new FailedReaderServiceException(ex);
+
+                throw CreateAndLogServiceException(failedServiceException);
+            }
+        }
+
         private ReaderValidationException CreateAndLogValidationException(Xeption exception)
         {
             var readerValidationException =
@@ -101,6 +175,16 @@ namespace Library.Api.Services.Foundations.Readers
             this.loggingBroker.LogError(readerServiceException);
 
             return readerServiceException;
+        }
+
+        private ReaderDependencyException CreateAndLogDependencyException(Xeption exception)
+        {
+            var readerDependencyException =
+                new ReaderDependencyException(exception);
+
+            this.loggingBroker.LogError(readerDependencyException);
+
+            return readerDependencyException;
         }
     }
 }

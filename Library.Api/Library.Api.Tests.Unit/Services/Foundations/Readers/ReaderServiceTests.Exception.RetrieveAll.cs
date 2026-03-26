@@ -21,11 +21,11 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Readers
             //given
             SqlException sqlException = GetSqlError();
 
-            var failedReaderServiceException =
-                new FailedReaderServiceException(sqlException);
+            var failedReaderStorageException =
+                new FailedReaderStorageException(sqlException);
 
             var expectedReaderDependencyException =
-                new ReaderDependencyException(failedReaderServiceException);
+                new ReaderDependencyException(failedReaderStorageException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllReaders())
