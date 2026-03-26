@@ -48,11 +48,11 @@ namespace Library.Api.Services.Foundations.Books
             }
             catch (SqlException sqlException)
             {
-                var failedBookServiceException =
-                    new FailedBookServiceException(sqlException);
+                var failedBookStorageException =
+                    new FailedBookStorageException(sqlException);
 
                 var bookDependencyException =
-                    new BookDependencyException(failedBookServiceException);
+                    new BookDependencyException(failedBookStorageException);
 
                 this.loggingBroker.LogCritical(bookDependencyException);
 

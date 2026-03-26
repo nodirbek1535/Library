@@ -1,13 +1,6 @@
-﻿//===============================================
-//@nodirbek1535 library api program (C)
-//===============================================
-
-
-using Library.Api.Brokers.Loggings;
+﻿using Library.Api.Brokers.Loggings;
 using Library.Api.Brokers.Storages;
 using Library.Api.Models.Readers;
-using Library.Api.Models.Readers.Exceptions;
-using Microsoft.Data.SqlClient;
 
 namespace Library.Api.Services.Foundations.Readers
 {
@@ -36,43 +29,17 @@ namespace Library.Api.Services.Foundations.Readers
             TryCatch(async () =>
             {
                 ValidateReaderId(readerId);
-                Reader maybeReader = await this.storageBroker.SelectReaderByIdAsync(readerId);
+
+                Reader maybeReader =
+                    await this.storageBroker.SelectReaderByIdAsync(readerId);
+
                 ValidateStorageReader(maybeReader, readerId);
 
                 return maybeReader;
             });
 
-        public IQueryable<Reader> RetrieveAllReaders()
-        {
-            try
-            {
-                return this.storageBroker.SelectAllReaders();
-            }
-            catch (SqlException sqlException)
-            {
-                var failedReaderServiceException =
-                    new FailedReaderServiceException(sqlException);
-
-                var readerDependencyException =
-                    new ReaderDependencyException(failedReaderServiceException);
-
-                this.loggingBroker.LogCritical(readerDependencyException);
-
-                throw readerDependencyException;
-            }
-            catch (Exception exception)
-            {
-                var failedReaderServiceException =
-                    new FailedReaderServiceException(exception);
-
-                var readerServiceException =
-                    new ReaderServiceException(failedReaderServiceException);
-
-                this.loggingBroker.LogError(readerServiceException);
-
-                throw readerServiceException;
-            }
-        }
+        public IQueryable<Reader> RetrieveAllReaders() =>
+            TryCatch(() => this.storageBroker.SelectAllReaders());
 
         public ValueTask<Reader> ModifyReaderAsync(Reader reader) =>
             TryCatch(async () =>
@@ -88,7 +55,7 @@ namespace Library.Api.Services.Foundations.Readers
             });
 
         public ValueTask<Reader> RemoveReaderByIdAsync(Guid readerId) =>
-            TryCatch(async () =>
+            TryCatchRemove(async () =>
             {
                 ValidateReaderId(readerId);
 

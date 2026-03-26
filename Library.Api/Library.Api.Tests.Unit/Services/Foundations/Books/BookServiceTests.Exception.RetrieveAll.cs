@@ -18,11 +18,11 @@ namespace Library.Api.Tests.Unit.Services.Foundations.Books
             //given
             SqlException sqlException = GetSqlError();
 
-            var failedBookServiceException =
-                new FailedBookServiceException(sqlException);
+            var failedBookStorageException =
+                new FailedBookStorageException(sqlException);
 
             var expectedBookDependencyException =
-                new BookDependencyException(failedBookServiceException);
+                new BookDependencyException(failedBookStorageException);
 
             this.storageBrokerMock.Setup(broker =>
                 broker.SelectAllBooks())
